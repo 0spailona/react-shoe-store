@@ -1,0 +1,19 @@
+{
+  "name": "shoe-store",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/0spailona/react-shoe-store.git"
+  },
+  "author": "0spailona",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/0spailona/react-shoe-store/issues"
+  },
+  "homepage": "https://github.com/0spailona/react-shoe-store#readme",
+  "description": ""
+}
