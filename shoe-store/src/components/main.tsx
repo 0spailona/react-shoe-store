@@ -1,5 +1,5 @@
-import TopSales from "./topSales.tsx";
-import Catalog from "./catalog.tsx";
+import TopSales from "./lists/topSales.tsx";
+import Catalog from "./lists/catalog.tsx";
 
 export default function Main() {
     return (<>

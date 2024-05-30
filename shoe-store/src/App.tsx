@@ -3,11 +3,12 @@ import Footer from "./components/footer.tsx";
 import {Container} from "react-bootstrap";
 import {Route, Routes} from 'react-router-dom';
 import Main from "./components/main.tsx";
-import Contacts from "./components/contacts.tsx";
-import AboutStore from "./components/aboutStore.tsx";
+import Contacts from "./components/info/contacts.tsx";
+import AboutStore from "./components/info/aboutStore.tsx";
 import Banner from "./components/banner.tsx";
-import Catalog from "./components/catalog.tsx";
-import ProductCard from "./components/productCard.tsx";
+import Catalog from "./components/lists/catalog.tsx";
+import ProductCard from "./components/productCard/productCard.tsx";
+import Cart from "./components/cart/Cart.tsx";
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
                             <Route path="/about" element={<AboutStore/>}/>
                             <Route path="/catalog" element={<Catalog isPage={true}/>}/>
                             <Route path="/productCard/:id" element={<ProductCard/>}/>
+                            <Route path="/cart" element={<Cart/>}/>
                         </Routes>
                     </div>
                 </div>

@@ -23,3 +23,10 @@ export type FullItem = {
     sku:string,
     title:string,
 }
+
+export type CartItem ={
+    title:string,
+    price:number,
+    size:string,
+    count:number
+}

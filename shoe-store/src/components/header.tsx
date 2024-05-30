@@ -1,10 +1,20 @@
-import {Container, Nav, Navbar} from "react-bootstrap";
+import {Col, Container, Form, Nav, Navbar, Row} from "react-bootstrap";
+import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 export default function Header() {
+const navigate = useNavigate();
+
+    const [searchFormVisible, setSearchFormVisible] = useState<boolean>(false);
+
+    const toggleSearchFarmVisible = ()=>{
+      setSearchFormVisible(true)
+    }
+
     return (
-        <Container className="">
-            <div className="row">
-                <div className="col">
+        <Container>
+            <Row>
+                <Col>
                     <Navbar expand="sm" className="navbar-light bg-light">
                         <Navbar.Brand href="/"> <img src="./img/header-logo.png" alt="Bosa Noga"/></Navbar.Brand>
                         <Navbar.Collapse id="navbarMain">
@@ -24,20 +34,20 @@ export default function Header() {
                             </Nav>
                             <div>
                                 <div className="header-controls-pics">
-                                    <div data-id="search-expander" className="header-controls-pic header-controls-search"></div>
-                                    <div className="header-controls-pic header-controls-cart">
+                                    <div data-id="search-expander" className="header-controls-pic header-controls-search" onClick={() => toggleSearchFarmVisible()}></div>
+                                    <div className="header-controls-pic header-controls-cart" onClick={()=> navigate("/cart")}>
                                         <div className="header-controls-cart-full">1</div>
                                         <div className="header-controls-cart-menu"></div>
                                     </div>
                                 </div>
-                                <form data-id="search-form" className="header-controls-search-form form-inline invisible">
-                                    <input className="form-control" placeholder="Поиск"/>
-                                </form>
+                                <Form data-id="search-form" className={`header-controls-search-form form-inline ${searchFormVisible ? "" : "invisible"}`}>
+                                    <Form.Control placeholder="Поиск"/>
+                                </Form>
                             </div>
                         </Navbar.Collapse>
                     </Navbar>
-                </div>
-            </div>
+                </Col>
+            </Row>
         </Container>
     )
 }

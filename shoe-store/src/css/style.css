@@ -193,6 +193,10 @@ section {
     margin-bottom: 1em;
 }
 
+.catalog-item-card .image-wrap{
+    height: 400px;
+}
+
 .catalog-item-size {
     display: inline-block;
     padding: 0 10px;

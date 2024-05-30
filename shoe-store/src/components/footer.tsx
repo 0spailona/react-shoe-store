@@ -1,26 +1,26 @@
-import {Container, Nav} from "react-bootstrap";
+import {Col, Container, Nav, Row} from "react-bootstrap";
 
 export default function Footer() {
     return (
         <Container className="footer">
-                <div className="row bg-light">
-                    <div className="col">
+                <Row className="bg-light">
+                    <Col>
                         <section>
                             <h5>Информация</h5>
                             <Nav className="flex-column">
                                 <Nav.Item>
-                                    <Nav.Link href="/about" className="nav-link">О магазине</Nav.Link>
+                                    <Nav.Link className="text-secondary" href="/about">О магазине</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link href="/catalog" className="nav-link">Каталог</Nav.Link>
+                                    <Nav.Link className="text-secondary" href="/catalog">Каталог</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link href="/contacts" className="nav-link">Контакты</Nav.Link>
+                                    <Nav.Link className="text-secondary" href="/contacts">Контакты</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </section>
-                    </div>
-                    <div className="col">
+                    </Col>
+                    <Col>
                         <section>
                             <h5>Принимаем к оплате:</h5>
                             <div className="footer-pay">
@@ -39,8 +39,8 @@ export default function Footer() {
                                 <div>Доставка по всей России!</div>
                             </div>
                         </section>
-                    </div>
-                    <div className="col text-right">
+                    </Col>
+                    <Col className="text-right">
                         <section className="footer-contacts">
                             <h5>Контакты:</h5>
                             <a className="footer-contacts-phone" href="tel:+7-495-790-35-03">+7 495 79 03 5 03</a>
@@ -51,8 +51,8 @@ export default function Footer() {
                                 <div className="footer-social-link footer-social-link-vk"></div>
                             </div>
                         </section>
-                    </div>
-                </div>
+                    </Col>
+                </Row>
         </Container>
 );
 }
