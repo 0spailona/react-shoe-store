@@ -30,3 +30,5 @@ export type CartItem ={
     size:string,
     count:number
 }
+
+export const countLoadItems = 6

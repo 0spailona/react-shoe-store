@@ -9,7 +9,7 @@ type Props ={
 export default function List({items}: Props) {
 
     return (
-        <Row className="row">
+        <Row>
             {items.map((item: Item) => <ListItem key={item.id} item={item}/>)}
         </Row>
     )
