@@ -8,7 +8,10 @@ const navigate = useNavigate();
     const [searchFormVisible, setSearchFormVisible] = useState<boolean>(false);
 
     const toggleSearchFarmVisible = ()=>{
-      setSearchFormVisible(true)
+        if(!searchFormVisible){
+            setSearchFormVisible(true)
+        }
+
     }
 
     return (

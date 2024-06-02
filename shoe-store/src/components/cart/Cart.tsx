@@ -1,34 +1,17 @@
 import CartTable from "./cartTable.tsx";
 import {Button, Card, Form} from "react-bootstrap";
-import {useState} from "react";
-import {CartItem} from "../../config.ts";
+import {useAppSelector} from "../../redux/hooks.ts";
 
 
 export default function Cart(){
 
-    const [items, setItems] = useState<Array<CartItem>>([
-        {
-            title: "string",
-            price: 2,
-            size: "size",
-            count: 2
-        }
-    ])
-
-    const toCountSum = () => {
-        let sum = 0;
-
-        for(const item of items){
-            sum = sum + item.price * item.count;
-        }
-         return sum
-    }
+    const {items,sum} = useAppSelector(state => state.cart)
 
     return (
         <>
             <section className="cart">
                 <h2 className="text-center">Корзина</h2>
-                <CartTable items={items} sum={toCountSum()}/>
+                <CartTable items={items} sum={sum}/>
             </section>
             <section className="order">
                 <h2 className="text-center">Оформить заказ</h2>

@@ -1,10 +1,12 @@
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {FullItem} from "../../config.ts";
+import {CartItem, FullItem} from "../../config.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 import {Button, ButtonGroup, Col, Image, Row} from "react-bootstrap";
 import ProductCardTable from "./productCardTable.tsx";
 import ModalError from "../utilsComponents/modalError.tsx";
+import {useAppDispatch} from "../../redux/hooks.ts";
+import {addToCart} from "../../redux/cartSlice.ts";
 
 
 export default function ProductCard() {
@@ -25,10 +27,14 @@ export default function ProductCard() {
         title:"",
     })
 
+    const dispatch = useAppDispatch()
+    const addItemToCart = (item:CartItem)=>dispatch(addToCart(item))
+
     const [error,setError]=useState(false)
     const [loading, setLoading] = useState<boolean>(true);
     const [count, setCount] = useState(0);
-    const [selectedSize, setSelectedSize] = useState(-1);
+    const [selectedSize, setSelectedSize] = useState({ index:- 1, size:""
+});
 
     const {id} = useParams()
 
@@ -53,11 +59,11 @@ export default function ProductCard() {
         setCount(newCount)
     }
 
-    const newSelectedSize = (index:number) => {
-        if(selectedSize === index){
+    const newSelectedSize = (index:number,size:string) => {
+        if(selectedSize.index === index){
             return
         }
-        setSelectedSize(index)
+        setSelectedSize({index, size})
         setCount(0)
     }
 
@@ -73,8 +79,10 @@ export default function ProductCard() {
                         <Col md={7}>
                            <ProductCardTable sku={card.sku} manufacturer={card.manufacturer} color={card.color} material={card.material} season={card.season} reason={card.reason}/>
                             <div className="text-center">
-                                <p>Размеры в наличии: {card.sizes.map((data, index) => <span key={index}
-                                                                                             className={`catalog-item-size ${selectedSize === index ? "selected" : ""}`} onClick={()=>newSelectedSize(index)}>{data.size} US</span>)}</p>
+                                <p>Размеры в наличии: {card.sizes.map((data, index) =>
+                                    <span key={index}
+                                          className={`catalog-item-size ${selectedSize.index === index ? "selected" : ""}`}
+                                          onClick={()=>newSelectedSize(index,data.size)}>{data.size} US</span>)}</p>
                                 <div className="mb-3">Количество: <ButtonGroup size="sm" className="pl-2">
                                     <Button variant="secondary" onClick={() => decreaseCount()}>-</Button>
                                     <Button variant="outline-primary">{count}</Button>
@@ -82,7 +90,15 @@ export default function ProductCard() {
                                     </ButtonGroup>
                                 </div>
                             </div>
-                            <Button variant="danger" size="lg" className="btn-block">В корзину</Button>
+                            <Button variant="danger" size="lg" className="btn-block" onClick={
+                                ()=>addItemToCart({
+                                    id:1,
+                                    title:"A",
+                                    count,
+                                    size:selectedSize.size,
+                                    price:card.price
+                                })
+                            }>В корзину</Button>
                         </Col>
                     </Row>
                 </section> : <ModalError/>}

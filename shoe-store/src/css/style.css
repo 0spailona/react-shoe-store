@@ -230,6 +230,10 @@ section {
     box-shadow: none;
 }
 
+.catalog-search-form .form-control:focus-visible{
+    box-shadow: none;
+}
+
 /* Footer */
 .footer {
     padding: 0 25px;

@@ -28,7 +28,8 @@ export type CartItem ={
     title:string,
     price:number,
     size:string,
-    count:number
+    count:number,
+    id:number
 }
 
 export const countLoadItems = 6

@@ -6,7 +6,7 @@ import Main from "./components/main.tsx";
 import Contacts from "./components/info/contacts.tsx";
 import AboutStore from "./components/info/aboutStore.tsx";
 import Banner from "./components/banner.tsx";
-import Catalog from "./components/lists/catalog.tsx";
+import Catalog from "./components/lists/catalog/catalog.tsx";
 import ProductCard from "./components/productCard/productCard.tsx";
 import Cart from "./components/cart/Cart.tsx";
 
@@ -26,7 +26,7 @@ function App() {
                             <Route path="/" element={<Main/>}/>
                             <Route path="/contacts" element={<Contacts/>}/>
                             <Route path="/about" element={<AboutStore/>}/>
-                            <Route path="/catalog" element={<Catalog isPage={true}/>}/>
+                            <Route path="/catalog" element={<Catalog isHasSearchForm={true} searchStr={""}/>}/>
                             <Route path="/productCard/:id" element={<ProductCard/>}/>
                             <Route path="/cart" element={<Cart/>}/>
                         </Routes>
