@@ -28,7 +28,11 @@ export default function ProductCard() {
     })
 
     const dispatch = useAppDispatch()
-    const addItemToCart = (item:CartItem)=>dispatch(addToCart(item))
+    const addItemToCart = (item:CartItem)=> {
+        if(count > 0){
+            dispatch(addToCart(item))
+        }
+    }
 
     const [error,setError]=useState(false)
     const [loading, setLoading] = useState<boolean>(true);
@@ -50,13 +54,17 @@ export default function ProductCard() {
     }, [])
 
     const increaseCount = () => {
-        const newCount = count + 1;
-        setCount(newCount)
+        if(selectedSize.size){
+            const newCount = count + 1;
+            setCount(newCount)
+        }
     }
 
     const decreaseCount = () => {
-        const newCount = count - 1;
-        setCount(newCount)
+        if(count > 0){
+            const newCount = count - 1;
+            setCount(newCount)
+        }
     }
 
     const newSelectedSize = (index:number,size:string) => {
@@ -67,6 +75,7 @@ export default function ProductCard() {
         setCount(0)
     }
 
+
     return (
         <>
             {loading ? <Preloader/> : !error ?
@@ -74,10 +83,12 @@ export default function ProductCard() {
                     <h2 className="text-center">{card.title}</h2>
                     <Row>
                         <Col md={5}>
-                            <Image src={card.images[0]} alt={`Здесь должно быть фото товара "${card.title}", но что-то пошло не так`} fluid/>
+                            <Image src={card.images[0]}
+                                   alt={`Здесь должно быть фото товара "${card.title}", но что-то пошло не так`} fluid/>
                         </Col>
                         <Col md={7}>
-                           <ProductCardTable sku={card.sku} manufacturer={card.manufacturer} color={card.color} material={card.material} season={card.season} reason={card.reason}/>
+                           <ProductCardTable sku={card.sku} manufacturer={card.manufacturer} color={card.color}
+                                             material={card.material} season={card.season} reason={card.reason}/>
                             <div className="text-center">
                                 <p>Размеры в наличии: {card.sizes.map((data, index) =>
                                     <span key={index}
@@ -91,13 +102,14 @@ export default function ProductCard() {
                                 </div>
                             </div>
                             <Button variant="danger" size="lg" className="btn-block" onClick={
-                                ()=>addItemToCart({
-                                    id:1,
-                                    title:"A",
-                                    count,
-                                    size:selectedSize.size,
-                                    price:card.price
-                                })
+                                ()=> addItemToCart({
+                                            id: card.id,
+                                            title: card.title,
+                                            count,
+                                            size: selectedSize.size,
+                                            price: card.price
+                                        })
+
                             }>В корзину</Button>
                         </Col>
                     </Row>

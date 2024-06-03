@@ -1,9 +1,10 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import cartReducer from "./cartSlice.ts";
+import itemsListReducer from "./getItemsListSlice.ts";
 
 const rootReducer = combineReducers({
     cart: cartReducer,
-   // lastSearch: lastSearchReducer
+    itemsList: itemsListReducer
 });
 
 export const store = configureStore({

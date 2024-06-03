@@ -14,24 +14,22 @@ export default class Catalog extends Component<Props> {
 
     state: {
         url: string,
-        loading: boolean,
-        hasMore: boolean,
-        categories: Array<{ id: number, title: string }>,
-        activeCategory: number,
-        list: Array<Item>
-        searchStr: string,
+       // loading: boolean,
+        //hasMore: boolean,
+       // categories: Array<{ id: number, title: string }>,
+       // activeCategory: number,
+       // list: Array<Item>
+       // searchStr: string,
         inputValue: string,
-        error: boolean
     } = {
         url: import.meta.env.VITE_URL,
-        loading: true,
-        hasMore: false,
-        categories: [],
-        activeCategory: 0,
-        list: [],
-        searchStr: this.props.searchStr,
+        //loading: true,
+        //hasMore: false,
+        //categories: [],
+        //activeCategory: 0,
+        //list: [],
+        //searchStr: this.props.searchStr,
         inputValue: "",
-        error: false
     }
 
     async componentDidMount() {
@@ -42,7 +40,6 @@ export default class Catalog extends Component<Props> {
     async loadCategories() {
         const response = await fetch(`${this.state.url}/api/categories/`)
         if (Math.trunc(response.status / 100) === 2) this.setState({categories: await response.json(), loading: false})
-        //this.setState({error: true})
     }
 
 
@@ -89,7 +86,6 @@ export default class Catalog extends Component<Props> {
                 })
             }
         }
-        //this.setState({error: true})
     }
 
     async getFirstListByCategories(categoryId: number) {
@@ -106,11 +102,10 @@ export default class Catalog extends Component<Props> {
     }
 
     render() {
-        console.log("props.searchStr", this.props.searchStr)
+        //console.log("props.searchStr", this.props.searchStr)
         // console.log("this.state.list", this.state.list)
-        //console.log("this.error", this.state.error)
         //console.log("search", this.state.searchStr)
-         console.log("input", this.state.inputValue)
+        // console.log("input", this.state.inputValue)
         // console.log("activeCategory", this.state.activeCategory)
 
         const searchField = !this.props.isHasSearchForm ? null :

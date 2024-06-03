@@ -15,7 +15,8 @@ export default function ListItem({item}: Props) {
                 <Card className="catalog-item-card w-100 overflow-hidden"
                       onClick={() => navigate(`/productCard/${item.id}`)}>
                     <div className="image-wrap d-flex justify-content-center flex-column">
-                        <Image src={item.images[0]} alt={item.title} fluid className="mh-100"/>
+                        <Image src={item.images[0]} alt={`Здесь должно быть фото товара "${item.title}", но что-то пошло не так`}
+                               fluid className="mh-100"/>
                     </div>
                     <Card.Body className="d-flex flex-column align-items-start">
                         <Card.Text>{item.title}</Card.Text>
