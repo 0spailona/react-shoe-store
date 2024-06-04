@@ -2,10 +2,10 @@ import Preloader from "../../utilsComponents/preloader.tsx";
 import {Component} from "react";
 import {GlobalState} from "../../../config.ts";
 import CatalogNav from "./catalogNav.tsx";
-import {Button} from "react-bootstrap";
+import {Button, Form} from "react-bootstrap";
 import {AppDispatch} from "../../../redux/store.ts";
 import {connect} from "react-redux";
-import {changeActiveCategory, cleanStore, fetchCatalogList, fetchCategories} from "../../../redux/catalogListSlice.ts";
+import { cleanStore, fetchCatalogList, fetchCategories} from "../../../redux/catalogListSlice.ts";
 import CatalogList from "./catalogList.tsx";
 
 type Props = {
@@ -20,7 +20,6 @@ type Props = {
         searchStr: string,
         offset: { isOffset: boolean, size: number }
     }) => void,
-    changeCategory: (categoryId: number) => void,
     loadCategories: (url: string) => void,
     cleanStore: () => void,
     listLength: number
@@ -44,26 +43,18 @@ class Catalog extends Component<Props> {
             searchStr: this.props.searchStr,
             offset: {isOffset: false, size: 0}
         })
-        //await this.loadCategories();
-        //await this.loadList(null, 0, 0)
+        this.setState({inputValue: this.props.searchStr})
     }
 
-    /*componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any) {
-        if(prevProps.activeCategory !== this.props.activeCategory) {
-            console.log("change");
-        }
-    }*/
-
     getFirstListByCategories(categoryId: number) {
-        console.log("getFirstListByCategories categoryId", categoryId)
-        //this.props.changeCategory(categoryId)
+        //console.log("getFirstListByCategories categoryId", categoryId)
         this.props.cleanStore()
+        this.setState({inputValue: this.props.searchStr})
         this.props.loadList({
             categoryId: categoryId,
             searchStr: this.props.searchStr,
             offset: {isOffset: false, size:0}
         })
-        //await this.loadList(null, categoryId, 0)
     }
 
     async getFirstListBySearch(str: string) {
@@ -73,7 +64,6 @@ class Catalog extends Component<Props> {
             searchStr: str,
             offset: {isOffset: false, size:0}
         })
-        // await this.loadList(str, null, 0)
     }
 
     getMoreItems() {
@@ -82,29 +72,38 @@ class Catalog extends Component<Props> {
             searchStr: this.props.searchStr,
             offset: {isOffset: true, size: this.props.listLength}
         })
-        // const offset = this.state.list.length;
-        //await this.loadList(null, null, offset)
+    }
+
+    componentDidUpdate(prevProps: Readonly<Props>) {
+        if(prevProps.searchStr !== this.props.searchStr){
+            this.setState({inputValue: this.props.searchStr})
+            this.props.loadList({
+                categoryId: this.props.activeCategory,
+                searchStr: this.props.searchStr,
+                offset: {isOffset: false, size:0}
+            })
+        }
     }
 
     render() {
         //console.log("props.searchStr", this.props.searchStr)
         // console.log("this.state.list", this.state.list)
-        //console.log("search", this.state.searchStr)
+        //console.log("search", this.props.searchStr)
         // console.log("input", this.state.inputValue)
-        console.log("activeCategory", this.props.activeCategory)
+        //console.log("activeCategory", this.props.activeCategory)
         //console.log("hasMore", this.props.hasMore)
 
         const searchField = !this.props.isHasSearchForm ? null :
-            <form className="catalog-search-form form-inline"
+            <Form className="catalog-search-form"
                   onSubmit={(e) => e.preventDefault()}>
-                <input name="search"
-                       className={`form-control ${this.state.inputValue === this.props.searchStr ? "text-primary" : ""}`}
+                <Form.Control name="search"
+                       className={`${this.state.inputValue === this.props.searchStr ? "text-primary" : ""}`}
                        value={this.state.inputValue}
                        placeholder="Поиск"
                        onKeyUp={e => e.key === "Enter" && this.getFirstListBySearch(e.currentTarget.value)}
                        onChange={(e) => this.setState({inputValue: e.target.value})}
                 />
-            </form>;
+            </Form>;
 
         const categories = this.props.categories.length === 0 ? null :
             <CatalogNav activeCategory={this.props.activeCategory} categories={this.props.categories}
@@ -153,7 +152,6 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
             searchStr: string,
             offset: { isOffset: boolean, size: number }
         }) => dispatch(fetchCatalogList(pattern)),
-        changeCategory: (categoryId: number) => changeActiveCategory(categoryId),
         loadCategories: (url: string) => dispatch(fetchCategories(url)),
         cleanStore: () => dispatch(cleanStore())
     };
@@ -161,48 +159,3 @@ const mapDispatchToProps = (dispatch: AppDispatch) => {
 // eslint-disable-next-line
 export default connect(mapStateToProps, mapDispatchToProps)(Catalog);
 
-/*
-    async loadList(searchStr: string | null, categoryId: number | null, offset: number) {
-        this.setState({loading: true})
-        //console.log("loadList state.searchStr ", this.state.searchStr)
-        searchStr ??= this.state.searchStr
-        categoryId ??= this.state.activeCategory
-
-        let url = `${this.state.url}/api/items?`;
-
-        if (searchStr) {
-            url += `q=${(searchStr)}&`;
-        }
-
-        if (categoryId) {
-            url += `categoryId=${(categoryId)}&`
-        }
-
-        if (offset) {
-            url += `offset=${offset}&`
-        }
-
-        // console.log("loadList url",url)
-        // console.log("loadList categoryId",categoryId)
-
-        const response = await fetch(url)
-        if (Math.trunc(response.status / 100) === 2) {
-            const list = await response.json();
-            if (offset) {
-                this.setState({
-                    list: [...this.state.list, ...list],
-                    hasMore: list.length >= countLoadItems,
-                    loading: false
-                })
-            } else {
-                this.setState({
-                    list,
-                    hasMore: list.length >= countLoadItems,
-                    loading: false,
-                    activeCategory: categoryId,
-                    searchStr,
-                    inputValue: searchStr
-                })
-            }
-        }
-    }*/

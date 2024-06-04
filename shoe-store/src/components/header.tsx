@@ -1,22 +1,38 @@
 import {Col, Container, Form, Nav, Navbar, Row} from "react-bootstrap";
 import {useState} from "react";
 import {useNavigate,NavLink} from "react-router-dom";
-import {useAppSelector} from "../redux/hooks.ts";
+import {useAppDispatch, useAppSelector} from "../redux/hooks.ts";
 import {headerNav} from "../config.ts";
+import {toSearchStr} from "../redux/catalogListSlice.ts";
 
 export default function Header() {
     const navigate = useNavigate();
     const items = useAppSelector(state => state.cart.items)
-    console.log("header cart items",items)
+    //console.log("header cart items",items)
+    const dispatch = useAppDispatch()
+    const navigator = useNavigate();
 
     const [searchFormVisible, setSearchFormVisible] = useState<boolean>(false);
+    const [inputValue,setInputValue] = useState("");
 
     const toggleSearchFarmVisible = () => {
         if (!searchFormVisible) {
             setSearchFormVisible(true)
+            return
         }
-
+        if(!inputValue){
+            setSearchFormVisible(false)
+            return
+        }
+        else{
+            dispatch(toSearchStr(inputValue))
+            setInputValue("")
+            setSearchFormVisible(false)
+            navigator("/catalog")
+            return
+        }
     }
+
 
     return (
         <Container>
@@ -44,8 +60,13 @@ export default function Header() {
                                     </div>
                                 </div>
                                 <Form data-id="search-form"
-                                      className={`header-controls-search-form form-inline ${searchFormVisible ? "" : "invisible"}`}>
-                                    <Form.Control placeholder="Поиск"/>
+                                      className={`header-controls-search-form form-inline ${searchFormVisible ? "" : "invisible"}`}
+                                      onSubmit={(e) => e.preventDefault()}>
+                                    <Form.Control placeholder="Поиск"
+                                                  value={inputValue}
+                                                  onChange={(e)=>setInputValue(e.target.value)}
+                                                  onKeyUp={e => e.key === "Enter" && toggleSearchFarmVisible()}
+                                    />
                                 </Form>
                             </div>
                         </Navbar.Collapse>

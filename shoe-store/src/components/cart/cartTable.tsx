@@ -1,18 +1,19 @@
 import {Button, NavLink, Table} from "react-bootstrap";
-import {CartItem} from "../../config.ts";
 import {removeFromCart} from "../../redux/cartSlice.ts";
-import {useAppDispatch} from "../../redux/hooks.ts";
+import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 
-type Props = {
-    items:Array<CartItem>,
-    sum:number,
-}
 
-export default function CartTable({items,sum}: Props) {
+export default function CartTable() {
     const dispatch = useAppDispatch()
-    const removeItem = (id:number)=>dispatch(removeFromCart(id))
-    if(items.length === 0){return}
-    return(
+    const {items,sum} = useAppSelector(state => state.cart)
+
+    const removeItem = (id: number) => dispatch(removeFromCart(id))
+    if (items.length === 0) {
+        return (
+            <h4 className="great-block text-center text-secondary p-5">Ваша корзина пуста</h4>
+        )
+    }
+    return (
         <Table className="table table-bordered">
             <thead>
             <tr>
@@ -26,8 +27,8 @@ export default function CartTable({items,sum}: Props) {
             </tr>
             </thead>
             <tbody>
-            {items.map((item,index)=>
-                <tr key={index+1}>
+            {items.map((item, index) =>
+                <tr key={index + 1}>
                     <td scope="row">{index + 1}</td>
                     <td><NavLink className="text-secondary" href="/products/1.html">{item.title}</NavLink></td>
                     <td>{item.size}</td>
@@ -35,7 +36,7 @@ export default function CartTable({items,sum}: Props) {
                     <td>{item.price} руб.</td>
                     <td>{item.price * item.count} руб.</td>
                     <td>
-                        <Button variant="outline-danger" size="sm" onClick={()=>removeItem(item.id)}>Удалить</Button>
+                        <Button variant="outline-danger" size="sm" onClick={() => removeItem(item.id)}>Удалить</Button>
                     </td>
                 </tr>
             )}

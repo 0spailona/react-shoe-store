@@ -34,6 +34,10 @@ section {
     min-height: 300px;
 }
 
+.great-block{
+    min-height: 450px;
+}
+
 /* Header */
 .header-controls-pics {
     display: flex;
@@ -106,9 +110,15 @@ section {
     box-shadow: none;
 }
 
+
+.header-controls-search-form .form-control:focus-visible{
+    box-shadow: none;
+}
+
 /* Banner */
 .banner {
     position: relative;
+    min-height: 120px;
 }
 
 .banner-header {

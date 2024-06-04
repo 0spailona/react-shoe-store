@@ -31,9 +31,23 @@ export type FullItem = {
     title: string,
 }
 
+export const initialStateProductCard = {
+    category: -1,
+    color: "",
+    heelSize: "",
+    id: -1,
+    images: [],
+    manufacturer: "",
+    material: "",
+    price: -1,
+    reason: "",
+    season: "",
+    sizes: [],
+    sku: "",
+    title: "",
+}
+
 export type CartItem = {
-    title: string,
-    price: number,
     size: string,
     count: number,
     id: number

@@ -45,20 +45,14 @@ export const catalogListSlice = createSliceWithThunk({
         listLength: (state => state.listLength),
     },
     reducers: (create) => ({
-        changeActiveCategory: create.reducer((state, action: PayloadAction<number>) => {
-            state.activeCategory = action.payload
-            state.catalogList = []
-            state.hasMore = false
-            state.listLength = 0
-        }),
         cleanStore: create.reducer((state) => {
             state.loading = true
             state.hasMore = false
-            //state.activeCategory = 0
             state.catalogList = []
-            //state.searchResultList = []
-            //state.searchStr = ""
             state.error = ""
+        }),
+        toSearchStr: create.reducer((state, action: PayloadAction<string>) => {
+            state.searchStr = action.payload
         }),
 
         fetchCategories: create.asyncThunk<Array<Item>, string>(
@@ -124,7 +118,7 @@ export const catalogListSlice = createSliceWithThunk({
                         return rejectWithValue("Loading error!")
                     }
                     const list = await response.json();
-                    console.log("fetchCatalogList list", list)
+                    //console.log("fetchCatalogList list", list)
                     return list
                 } catch (e) {
                     return rejectWithValue(e)
@@ -138,20 +132,11 @@ export const catalogListSlice = createSliceWithThunk({
                 },
                 fulfilled: (state, action) => {
                     state.listLength = state.catalogList.length + action.payload.length
-                    //state.searchResultList = action.payload
 
-                    /*if (action.meta.arg.categoryId !== state.activeCategory) {
-                        console.log("new category")
-                        state.catalogList = action.payload
-                    }*/
                     if (action.meta.arg.offset.isOffset) {
-                        console.log("offset")
+                        //console.log("offset")
                         state.catalogList = [...state.catalogList, ...action.payload]
-                    }
-                   /* if (action.meta.arg.searchStr) {
-                        console.log("search")
-                        state.catalogList = action.payload
-                    }*/ else {
+                    } else {
                         state.catalogList = action.payload
                     }
                     state.searchStr = action.meta.arg.searchStr ? action.meta.arg.searchStr : ""
@@ -172,7 +157,7 @@ export const catalogListSlice = createSliceWithThunk({
 })
 
 
-export const {changeActiveCategory, cleanStore, fetchCatalogList, fetchCategories} = catalogListSlice.actions
+export const { cleanStore,toSearchStr, fetchCatalogList, fetchCategories} = catalogListSlice.actions
 export const {catalogList, listLength, searchStr, loadingState, searchError} = catalogListSlice.selectors
 
 const catalogListReducer = catalogListSlice.reducer

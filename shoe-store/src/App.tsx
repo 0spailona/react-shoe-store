@@ -26,7 +26,7 @@ function App() {
                             <Route path="/" element={<Main/>}/>
                             <Route path="/contacts" element={<Contacts/>}/>
                             <Route path="/about" element={<AboutStore/>}/>
-                            <Route path="/catalog" element={<Catalog isHasSearchForm={true} searchStr={""}/>}/>
+                            <Route path="/catalog" element={<Catalog isHasSearchForm={true}/>}/>
                             <Route path="/productCard/:id" element={<ProductCard/>}/>
                             <Route path="/cart" element={<Cart/>}/>
                         </Routes>
