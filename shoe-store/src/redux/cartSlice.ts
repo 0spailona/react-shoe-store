@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {CartItem} from "../config.ts";
 
-type Cart = {
+export type Cart = {
     items: Array<CartItem>,
     sum: number
 }

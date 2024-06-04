@@ -29,6 +29,8 @@ section {
 }
 
 .small-block {
+    display: flex;
+    flex-direction: column;
     min-height: 300px;
 }
 
@@ -126,6 +128,7 @@ section {
 
 /* Preloader */
 .preloader {
+
     margin: 10px auto;
     position: relative;
     width: 30px;

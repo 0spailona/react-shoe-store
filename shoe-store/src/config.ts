@@ -1,3 +1,7 @@
+import {Cart} from "./redux/cartSlice.ts";
+import {CatalogListStore} from "./redux/catalogListSlice.ts";
+import {TopSalesListStore} from "./redux/topSalesListSlice.ts";
+
 export const headerNav = [{pageName: "Главная", href: "/"},
     {pageName: "Каталог", href: "/catalog"},
     {pageName: "О магазине", href: "/about"},
@@ -36,3 +40,9 @@ export type CartItem = {
 }
 
 export const countLoadItems = 6
+
+export type GlobalState ={
+    cart: Cart,
+    catalogList: CatalogListStore,
+    topsSalesList:TopSalesListStore
+}
