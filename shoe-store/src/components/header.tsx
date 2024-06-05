@@ -7,7 +7,7 @@ import {toSearchStr} from "../redux/catalogListSlice.ts";
 
 export default function Header() {
     const navigate = useNavigate();
-    const items = useAppSelector(state => state.cart.firstItems)
+    const items = useAppSelector(state => state.cart.cartItems)
     //console.log("header cart items",items)
     const dispatch = useAppDispatch()
     const navigator = useNavigate();
@@ -33,7 +33,6 @@ export default function Header() {
         }
     }
 
-
     return (
         <Container>
             <Row>
@@ -53,8 +52,8 @@ export default function Header() {
                                          onClick={() => toggleSearchFarmVisible()}></div>
                                     <div className="header-controls-pic header-controls-cart"
                                          onClick={() => navigate("/cart")}>
-                                        {items.length > 0 ?
-                                            <div className="header-controls-cart-full">{items.length}</div> : null
+                                        {Object.keys(items).length > 0 ?
+                                            <div className="header-controls-cart-full">{Object.keys(items).length}</div> : null
                                         }
                                         <div className="header-controls-cart-menu"></div>
                                     </div>

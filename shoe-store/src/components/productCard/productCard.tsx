@@ -15,7 +15,7 @@ export default function ProductCard() {
     const dispatch = useAppDispatch()
     const {item, error, loading} = useAppSelector(state => state.productCard)
     const [count, setCount] = useState(1);
-    const {arrayId} = useAppSelector(state => state.cart)
+    const {cartItems} = useAppSelector(state => state.cart)
     const [selectedSize, setSelectedSize] = useState({
         index: -1, size: ""
     });
@@ -23,8 +23,14 @@ export default function ProductCard() {
     //const [isInStock, setIsInStock] = useState(false);
 
     const addItemToCart = (item: CartFirstItem) => {
+
+        const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
+
+        console.log("arrayId",arrayId)
+
             //dispatch(addToCart(item))
-        dispatch(updateCart({cart:arrayId,id:item.id, addCount: item.count, remove:false}))
+        dispatch(updateCart({cart:arrayId,id:item.id, add:{isAdd:true,selectedSize:item.size, addCount: item.count},
+            isRemove: false}))
             //navigate(`/cart`)
     }
 
