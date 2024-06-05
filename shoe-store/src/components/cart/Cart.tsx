@@ -1,29 +1,32 @@
 import CartTable from "./cartTable.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import OrderForm from "./orderForm.tsx";
-import {fetchProductCard} from "../../redux/productCardslice.ts";
+import {fetchLastItems} from "../../redux/cartSlice.ts";
+import {useEffect} from "react";
 
 
 export default function Cart() {
     const dispatch = useAppDispatch()
-    const {items} = useAppSelector(state => state.cart)
+    const {firstSum,arrayId,lastItems} = useAppSelector(state => state.cart)
 
-    const toSum = () =>{
-        let sum = 0;
-        for(const item of items){
-            dispatch(fetchProductCard(`${item.id}`))
-            const trueItemData = useAppSelector(state => state.productCard.item)
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        if(firstSum > 0){
+            console.log("cart useEffect")
+            dispatch(fetchLastItems(arrayId))
         }
-        return true
-    }
+    }, [firstSum])
 
+    // {console.log("cart lastItems",lastItems)}
+    // {console.log("cart firstSum",firstSum)}
     return (
         <>
+
             <section className="cart">
                 <h2 className="text-center">Корзина</h2>
                 <CartTable/>
             </section>
-            {toSum() && <OrderForm/>}
+            {firstSum > 0 && <OrderForm/>}
         </>
     )
 }

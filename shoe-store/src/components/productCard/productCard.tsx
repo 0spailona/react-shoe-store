@@ -1,31 +1,31 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {CartItem} from "../../config.ts";
+import {CartFirstItem} from "../../config.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 import {Button, ButtonGroup, Col, Image, Row} from "react-bootstrap";
 import ProductCardTable from "./productCardTable.tsx";
 import ModalError from "../utilsComponents/modalError.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
-import {addToCart} from "../../redux/cartSlice.ts";
-import {fetchProductCard} from "../../redux/productCardslice.ts";
+import {addToCart, updateCart} from "../../redux/cartSlice.ts";
+import {fetchProductCard} from "../../redux/productCardSlice.ts";
 
 
 export default function ProductCard() {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
     const {item, error, loading} = useAppSelector(state => state.productCard)
-    const [count, setCount] = useState(0);
+    const [count, setCount] = useState(1);
+    const {arrayId} = useAppSelector(state => state.cart)
     const [selectedSize, setSelectedSize] = useState({
         index: -1, size: ""
     });
 
-    const [isInStock, setIsInStock] = useState(false);
+    //const [isInStock, setIsInStock] = useState(false);
 
-    const addItemToCart = (item: CartItem) => {
-        if (count > 0) {
-            dispatch(addToCart(item))
-            navigate(`/cart`)
-        }
+    const addItemToCart = (item: CartFirstItem) => {
+            //dispatch(addToCart(item))
+        dispatch(updateCart({cart:arrayId,id:item.id, addCount: item.count, remove:false}))
+            //navigate(`/cart`)
     }
 
 
@@ -35,11 +35,7 @@ export default function ProductCard() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         dispatch(fetchProductCard(id))
-        let count = 0
-        for(const size of item.sizes) {
-            count = size.available ? count+1 : count
-        }
-        setIsInStock(count > 0)
+
     }, [])
 
     const increaseCount = () => {
@@ -61,12 +57,11 @@ export default function ProductCard() {
             return
         }
         setSelectedSize({index, size})
-        setCount(0)
+        setCount(1)
     }
 
-
     const drawSizes = (index: number, data: { size: string, available: boolean, }) => {
-        console.log("drawSizes", index, data.size, data.available)
+       // console.log("drawSizes", index, data.size, data.available)
         if (data.available) {
             return (
                 <span key={index}
@@ -76,9 +71,19 @@ export default function ProductCard() {
         }
     }
 
+    const isInStock = () =>{
+        let count = 0
+        for(const size of item.sizes) {
+            count = size.available ? count+1 : count
+        }
+        //console.log("count",count)
+        return count > 0
+    }
+
     return (
         <>
-            {loading ? <Preloader/> : !error ?
+            {loading ? <Preloader/> : !error ?<>
+                {}
                 <section className="catalog-item">
                     <h2 className="text-center">{item.title}</h2>
                     <Row>
@@ -89,7 +94,7 @@ export default function ProductCard() {
                         <Col md={7}>
                             <ProductCardTable sku={item.sku} manufacturer={item.manufacturer} color={item.color}
                                               material={item.material} season={item.season} reason={item.reason}/>
-                            {isInStock ? <>
+                            {isInStock() ? <>
                                 <div className="text-center">
                                     <p>Размеры в наличии: {item.sizes.map((data, index) =>
                                                 drawSizes(index, data))} </p>
@@ -105,13 +110,14 @@ export default function ProductCard() {
                                         id: item.id,
                                         count,
                                         size: selectedSize.size,
+                                        price:item.price
                                     })
 
                                 }>В корзину</Button></> :
                             <h4>Товара нет в наличии</h4>}
                         </Col>
                     </Row>
-                </section> : <ModalError/>}
+                </section> </> : <ModalError/>}
         </>
     )
 }

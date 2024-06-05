@@ -11,7 +11,6 @@ export type ProductCard = {
 
 const initialState:ProductCard = {
     item: initialStateProductCard,
-
     error:"",
     loading:true
 }
@@ -42,7 +41,7 @@ export const productCardSlice = createSliceWithThunk({
                     }
 
                     const list = await response.json();
-                    //console.log("fetchTopSalesList list", list)
+                   // console.log("fetchTopSalesList card", list)
                     return list
                     //return await response.json();
                 } catch (e) {

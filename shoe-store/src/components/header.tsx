@@ -7,7 +7,7 @@ import {toSearchStr} from "../redux/catalogListSlice.ts";
 
 export default function Header() {
     const navigate = useNavigate();
-    const items = useAppSelector(state => state.cart.items)
+    const items = useAppSelector(state => state.cart.firstItems)
     //console.log("header cart items",items)
     const dispatch = useAppDispatch()
     const navigator = useNavigate();

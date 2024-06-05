@@ -39,7 +39,7 @@ export const initialStateProductCard = {
     images: [],
     manufacturer: "",
     material: "",
-    price: -1,
+    price: 0,
     reason: "",
     season: "",
     sizes: [],
@@ -47,10 +47,19 @@ export const initialStateProductCard = {
     title: "",
 }
 
-export type CartItem = {
+export type CartFirstItem = {
     size: string,
     count: number,
-    id: number
+    id: number,
+    price:number
+}
+
+export type CartLastItem = {
+    size: string,
+    count: number,
+    id: number,
+    price:number,
+    title: string,
 }
 
 export const countLoadItems = 6
