@@ -4,34 +4,29 @@ import {CartFirstItem} from "../../config.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 import {Button, ButtonGroup, Col, Image, Row} from "react-bootstrap";
 import ProductCardTable from "./productCardTable.tsx";
-import ModalError from "../utilsComponents/modalError.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
-import {addToCart, updateCart} from "../../redux/cartSlice.ts";
+import { updateCart} from "../../redux/cartSlice.ts";
 import {fetchProductCard} from "../../redux/productCardSlice.ts";
 
 
 export default function ProductCard() {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
-    const {item, error, loading} = useAppSelector(state => state.productCard)
-    const [count, setCount] = useState(1);
+
+    const {item, loading} = useAppSelector(state => state.productCard)
     const {cartItems} = useAppSelector(state => state.cart)
+
+    const [count, setCount] = useState(1);
     const [selectedSize, setSelectedSize] = useState({
         index: -1, size: ""
     });
 
-    //const [isInStock, setIsInStock] = useState(false);
 
     const addItemToCart = (item: CartFirstItem) => {
-
         const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
-
-        console.log("arrayId",arrayId)
-
-            //dispatch(addToCart(item))
         dispatch(updateCart({cart:arrayId,id:item.id, add:{isAdd:true,selectedSize:item.size, addCount: item.count},
-            isRemove: false}))
-            //navigate(`/cart`)
+            remove:{isRemove: false,selectedSize:""}}))
+            navigate(`/cart`)
     }
 
 
@@ -41,7 +36,6 @@ export default function ProductCard() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         dispatch(fetchProductCard(id))
-
     }, [])
 
     const increaseCount = () => {
@@ -82,13 +76,12 @@ export default function ProductCard() {
         for(const size of item.sizes) {
             count = size.available ? count+1 : count
         }
-        //console.log("count",count)
         return count > 0
     }
 
     return (
         <>
-            {loading ? <Preloader/> : !error ?<>
+            {loading ? <Preloader/> : <>
                 {}
                 <section className="catalog-item">
                     <h2 className="text-center">{item.title}</h2>
@@ -123,7 +116,7 @@ export default function ProductCard() {
                             <h4>Товара нет в наличии</h4>}
                         </Col>
                     </Row>
-                </section> </> : <ModalError/>}
+                </section> </>}
         </>
     )
 }

@@ -4,7 +4,7 @@ import {FullItem} from "../config.ts";
 const basedUrl = import.meta.env.VITE_URL
 
 
-type Type = {
+type CartItem = {
     size: string,
     id: number,
     price: number,
@@ -14,23 +14,19 @@ type Type = {
 
 
 export type Cart = {
-    cartItems: { [id: string]: Type },
-    arrayId: Array<number>,
-    firstSum: number,
-    lastSum: number,
+    cartItems: { [id: string]: CartItem },
+    sum: number,
     loading: boolean,
     loadingErrors: Array<string>,
-    updatingErrors: Array<{id: string,message:string }>,
+    updatingErrors: Array<{ id: string, message: string }>,
 }
 
 const initialState: Cart = {
     cartItems: {},
-    arrayId: [],
-    firstSum: 0,
-    lastSum: 0,
+    sum: 0,
     loading: true,
     loadingErrors: [],
-    updatingErrors:[]
+    updatingErrors: []
 }
 
 const createSliceWithThunk = buildCreateSlice({
@@ -48,41 +44,41 @@ async function getOneProductData(id: number) {
     return await response.json();
 }
 
-function getItemId(item: Type) {
+function getItemId(item: CartItem) {
     return `${item.id}-${item.size}`
 }
 
-function checkState(cartItems: { [id: string]: Type }, lastItems: Array<{
-    sizes: Array<string>,
-    id: number,
-    price: number,
-    title: string
-}>) {
+function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
+    [id: string]: {
+        price: number,
+    }
+}) {
     const errors = []
+    let sum = 0
+
+    if(Object.keys(cartItems).length === 0){
+        return {errors:[], cartItems, sum}
+    }
     for (const key of Object.keys(cartItems)) {
-        const cartItem = cartItems[key];
-        const updateItem = lastItems.find(item => item.id === cartItem.id)
-        if(!updateItem) {
+        if (!lastItems[key]) {
             errors.push({id: key, message: "Product not found!"})
-        }
-        else{
-            if (updateItem.price !== cartItem.price) {
+            cartItems[key].count = 0
+        } else {
+            if (cartItems[key].price !== lastItems[key].price) {
                 errors.push({id: key, message: "Change price"})
-                cartItem.price = updateItem.price
-            }
-            if(!updateItem.sizes.includes(cartItem.size)){
-                errors.push({id: key, message: "Size can't be less than 0"})
-                cartItem.count = 0
+                cartItems[key].price = lastItems[key].price
+                sum += cartItems[key].price * cartItems[key].count
             }
         }
     }
 
-    return {errors, cartItems}
+    return {errors, cartItems, sum}
 }
 
 
-function toDoObj(obj: FullItem) {
+function toDoObj(obj?: FullItem) {
 
+    if(!obj) return {}
     const availableSizes = []
 
     for (const size of obj.sizes) {
@@ -91,12 +87,18 @@ function toDoObj(obj: FullItem) {
         }
     }
 
-    return {
-        sizes: availableSizes,
-        id: obj.id,
-        price: obj.price,
-        title: obj.title,
+    const ids = availableSizes.map(x => `${obj.id}-${x}`)
+    const result: {
+        [id: string]: {
+            price: number,
+        }
+    } = {}
+    for (const id of ids) {
+        result[id] = {
+            price: obj.price,
+        }
     }
+    return result
 }
 
 function toDoNewItem(obj: FullItem | undefined, size: string, count: number) {
@@ -109,8 +111,13 @@ function toDoNewItem(obj: FullItem | undefined, size: string, count: number) {
     } : null;
 }
 
-function addToCart(cartItems: { [id: string]: Type },newItem: Type ) {
-    cartItems[getItemId(newItem)] = newItem
+function addToCart(cartItems: { [id: string]: CartItem }, item: CartItem) {
+    cartItems[getItemId(item)] = item
+    return cartItems
+}
+
+function removeFromCart(cartItems: { [id: string]: CartItem }, item: CartItem){
+    delete cartItems[getItemId(item)];
     return cartItems
 }
 
@@ -119,21 +126,22 @@ export const cartSlice = createSliceWithThunk({
     initialState,
     reducers: (create) => ({
 
-        updateCart: create.asyncThunk<{ updateData: Array<FullItem>, newItem?: FullItem }, {
+        updateCart: create.asyncThunk<{ updateData: Array<FullItem>, item?: FullItem}, {
             cart: Array<number>,
-            id: number, add: { isAdd: true, selectedSize: string, addCount: number },
-            isRemove: boolean
+            id: number, add: { isAdd: boolean, selectedSize: string, addCount: number },
+            remove: { isRemove: boolean, selectedSize: string }
         }>(async (pattern, {rejectWithValue}) => {
                 try {
                     if (pattern.cart.length === 0 && pattern.add) {
-                        return {updateData: [], newItem: await getOneProductData(pattern.id)}
+                        return {updateData: [], item: await getOneProductData(pattern.id)}
                     }
-                    if (pattern.add && pattern.cart.length > 0) {
+                    if ((pattern.add && pattern.cart.length > 0) || (pattern.remove.isRemove)) {
                         return {
                             updateData: await Promise.all(pattern.cart.map(getOneProductData)),
-                            newItem: await getOneProductData(pattern.id)
+                            item: await getOneProductData(pattern.id)
                         }
-                    } else return {updateData: []}
+                    }
+                  else return {updateData: []}
                 } catch (e) {
                     return rejectWithValue(e)
                 }
@@ -144,18 +152,22 @@ export const cartSlice = createSliceWithThunk({
                     state.loadingErrors = [];
                 },
                 fulfilled: (state, action) => {
-                    console.log("fulfilled action.payload", action.payload)
-                    const newItem = toDoNewItem(action.payload.newItem, action.meta.arg.add.selectedSize, action.meta.arg.add.addCount)
-                    if (action.payload.updateData.length === 0 && newItem) {
-                        //state.cartItems[getItemId(newItem)] = newItem
-                        state.cartItems = addToCart(state.cartItems,newItem)
-                    } else if (action.payload.updateData.length !== 0 && newItem) {
-                        const newState = action.payload.updateData.map(toDoObj)
-                        //console.log("fulfilled newState", newState)
-                        //console.log("fulfilled state.cartItems", state.cartItems)
-                        const updateResult = checkState(state.cartItems, newState)
-                        state.cartItems = addToCart(updateResult.cartItems,newItem)
-                        state.updatingErrors = updateResult.errors
+                    //console.log("fulfilled action.payload", action.payload)
+                    const item = toDoNewItem(action.payload.item, action.meta.arg.add.selectedSize, action.meta.arg.add.addCount)
+                    const newState = action.payload.updateData.map(toDoObj)[0]
+                    const updateResult = checkState(state.cartItems, newState)
+                    state.updatingErrors = updateResult.errors
+
+                    if(item){
+                        if(action.meta.arg.add.isAdd){
+                            state.cartItems = addToCart(updateResult.cartItems, item)
+                            state.sum = updateResult.sum + item.price * item.count
+                        }
+                        if(action.meta.arg.remove.isRemove){
+                            state.cartItems = removeFromCart(updateResult.cartItems,item)
+                            state.sum = updateResult.sum - item.price * item.count
+                            console.log("state.cartItems",Object.keys(state.cartItems).length)
+                        }
                     }
                 },
                 rejected: (state, action) => {
@@ -170,108 +182,7 @@ export const cartSlice = createSliceWithThunk({
     })
 })
 
-export const { removeFromCart, fetchLastItems, updateCart} = cartSlice.actions
+export const { updateCart} = cartSlice.actions
 const cartReducer = cartSlice.reducer
 export default cartReducer
 
-/*addToCart: create.reducer((state, action: PayloadAction<CartFirstItem>) => {
-
-            const newCartItem = state.firstItems.find(item => item.id === action.payload.id)
-            if (!newCartItem) {
-                state.firstItems.push(action.payload)
-                state.arrayId.push(action.payload.id)
-            } else {
-                newCartItem.count++
-
-            }
-            state.firstSum += action.payload.price * action.payload.count
-        }),
-        removeFromCart: create.reducer((state, action: PayloadAction<number>) => {
-            state.firstItems = state.firstItems.filter(x => x.id !== action.payload)
-        }),*/
-
-
-/*for (const item of state.firstItems) {
-    const lastItem = action.payload.find(x => x.id === item.id)
-    if (lastItem) {
-        if (lastItem.price !== item.price) {
-            state.error.push("Цена товара изменилась")
-        }
-
-        const size = lastItem.sizes.find(x => x.size === item.size)
-        if (!size || !size.available) {
-
-            //state.error.push("Количество товаров в корзине стало меньше")
-        }
-        if (lastItem.sizes) {
-
-        //const count = item.count + lastItem.count
-        state.lastItems.push({
-            size: item.size,
-            count: item.count,
-            id: lastItem.id,
-            price: lastItem.price,
-            title: lastItem.title
-        })
-
-        state.lastSum += lastItem.price * item.count
-    }
-
-}*/
-//console.log("fetchLastItems action payload", action.payload)
-//console.log("fetchLastItems lastItems", state.lastItems)
-
-/*fetchLastItems: create.asyncThunk<Array<FullItem>, Array<number>>(
-            async (pattern, {rejectWithValue}) => {
-                try {
-                    console.log("fetchLastItems pattern", pattern)
-                   return await Promise.all(pattern.map(getOneProductData))
-                } catch (e) {
-                    return rejectWithValue(e)
-                }
-            },
-            {
-                pending: (state) => {
-                    state.loading = true;
-                    state.error = [];
-                    state.lastItems = []
-                },
-                fulfilled: (state, action) => {
-                    for (const item of state.firstItems) {
-                        const lastItem = action.payload.find(x => x.id === item.id)
-                        if (lastItem) {
-                            if (lastItem.price !== item.price) {
-                                state.error.push("Цена товара изменилась")
-                            }
-
-                            const size = lastItem.sizes.find(x => x.size === item.size)
-                            if(!size || !size.available){
-
-                                //state.error.push("Количество товаров в корзине стало меньше")
-                            }
-                           /* if (lastItem.sizes) {*/
-
-//const count = item.count + lastItem.count
-/* state.lastItems.push({
-     size: item.size,
-     count:item.count,
-     id: lastItem.id,
-     price: lastItem.price,
-     title: lastItem.title
- })
-
- state.lastSum += lastItem.price * item.count
-}
-
-}
-console.log("fetchLastItems action payload", action.payload)
-console.log("fetchLastItems lastItems", state.lastItems)
-},
-rejected: (state, action) => {
-state.error.push(action.payload as string)
-},
-settled: (state) => {
-state.loading = false
-}
-}
-),*/
