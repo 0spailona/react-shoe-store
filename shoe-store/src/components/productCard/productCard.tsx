@@ -1,11 +1,10 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {CartFirstItem} from "../../config.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 import {Button, ButtonGroup, Col, Image, Row} from "react-bootstrap";
 import ProductCardTable from "./productCardTable.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
-import { updateCart} from "../../redux/cartSlice.ts";
+import {addToCart, CartItem} from "../../redux/cartSlice.ts";
 import {fetchProductCard} from "../../redux/productCardSlice.ts";
 
 
@@ -14,7 +13,7 @@ export default function ProductCard() {
     const dispatch = useAppDispatch()
 
     const {item, loading} = useAppSelector(state => state.productCard)
-    const {cartItems} = useAppSelector(state => state.cart)
+    //const {cartItems} = useAppSelector(state => state.cart)
 
     const [count, setCount] = useState(1);
     const [selectedSize, setSelectedSize] = useState({
@@ -22,10 +21,13 @@ export default function ProductCard() {
     });
 
 
-    const addItemToCart = (item: CartFirstItem) => {
-        const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
-        dispatch(updateCart({cart:arrayId,id:item.id, add:{isAdd:true,selectedSize:item.size, addCount: item.count},
-            remove:{isRemove: false,selectedSize:""}}))
+    const addItemToCart = (item: CartItem) => {
+        if(!item.size){
+            return
+        }
+        //const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
+        /*dispatch(updateCart({cart:arrayId,id:item.id,add:{selectedSize:item.size, addCount: item.count}}))*/
+        dispatch(addToCart(item))
             navigate(`/cart`)
     }
 
@@ -109,7 +111,8 @@ export default function ProductCard() {
                                         id: item.id,
                                         count,
                                         size: selectedSize.size,
-                                        price:item.price
+                                        price:item.price,
+                                        title:item.title
                                     })
 
                                 }>В корзину</Button></> :

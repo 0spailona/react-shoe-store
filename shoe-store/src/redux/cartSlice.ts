@@ -1,10 +1,8 @@
-import {asyncThunkCreator, buildCreateSlice} from "@reduxjs/toolkit";
+import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {FullItem} from "../config.ts";
+import {checkState, getItemId, getManyProductData, toDoObj} from "./cartUtils.ts";
 
-const basedUrl = import.meta.env.VITE_URL
-
-
-type CartItem = {
+export type CartItem = {
     size: string,
     id: number,
     price: number,
@@ -34,116 +32,30 @@ const createSliceWithThunk = buildCreateSlice({
 })
 
 
-async function getOneProductData(id: number) {
-    const fullUrl = `${basedUrl}/api/items/${id}`;
-    const response = await fetch(fullUrl)
-
-    if (!response.ok) {
-        throw new Error("Loading error!")
-    }
-    return await response.json();
-}
-
-function getItemId(item: CartItem) {
-    return `${item.id}-${item.size}`
-}
-
-function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
-    [id: string]: {
-        price: number,
-    }
-}) {
-    const errors = []
-    let sum = 0
-
-    if(Object.keys(cartItems).length === 0){
-        return {errors:[], cartItems, sum}
-    }
-    for (const key of Object.keys(cartItems)) {
-        if (!lastItems[key]) {
-            errors.push({id: key, message: "Product not found!"})
-            cartItems[key].count = 0
-        } else {
-            if (cartItems[key].price !== lastItems[key].price) {
-                errors.push({id: key, message: "Change price"})
-                cartItems[key].price = lastItems[key].price
-                sum += cartItems[key].price * cartItems[key].count
-            }
-        }
-    }
-
-    return {errors, cartItems, sum}
-}
-
-
-function toDoObj(obj?: FullItem) {
-
-    if(!obj) return {}
-    const availableSizes = []
-
-    for (const size of obj.sizes) {
-        if (size.available) {
-            availableSizes.push(size.size)
-        }
-    }
-
-    const ids = availableSizes.map(x => `${obj.id}-${x}`)
-    const result: {
-        [id: string]: {
-            price: number,
-        }
-    } = {}
-    for (const id of ids) {
-        result[id] = {
-            price: obj.price,
-        }
-    }
-    return result
-}
-
-function toDoNewItem(obj: FullItem | undefined, size: string, count: number) {
-    return obj ? {
-        size,
-        id: obj.id,
-        price: obj.price,
-        title: obj.title,
-        count
-    } : null;
-}
-
-function addToCart(cartItems: { [id: string]: CartItem }, item: CartItem) {
-    cartItems[getItemId(item)] = item
-    return cartItems
-}
-
-function removeFromCart(cartItems: { [id: string]: CartItem }, item: CartItem){
-    delete cartItems[getItemId(item)];
-    return cartItems
-}
 
 export const cartSlice = createSliceWithThunk({
     name: "cart",
     initialState,
     reducers: (create) => ({
+        removeFromCart: create.reducer((state, action: PayloadAction<string>) => {
+            state.loading = true
+            state.cartItems = Object.fromEntries(Object.entries(state.cartItems).filter(kv => kv[0] !== action.payload));
+        }),
+        addToCart: create.reducer((state, action: PayloadAction<CartItem>) => {
+            state.loading = true
+            state.cartItems[getItemId(action.payload)] = action.payload
+            //console.log("state.cartItems[getItemId(action.payload)]",state.cartItems[getItemId(action.payload)])
+        }),
 
-        updateCart: create.asyncThunk<{ updateData: Array<FullItem>, item?: FullItem}, {
-            cart: Array<number>,
-            id: number, add: { isAdd: boolean, selectedSize: string, addCount: number },
-            remove: { isRemove: boolean, selectedSize: string }
-        }>(async (pattern, {rejectWithValue}) => {
+        checkCart: create.asyncThunk<Array<FullItem>, Cart>(async (state, api) => {
                 try {
-                    if (pattern.cart.length === 0 && pattern.add) {
-                        return {updateData: [], item: await getOneProductData(pattern.id)}
-                    }
-                    if ((pattern.add && pattern.cart.length > 0) || (pattern.remove.isRemove)) {
-                        return {
-                            updateData: await Promise.all(pattern.cart.map(getOneProductData)),
-                            item: await getOneProductData(pattern.id)
-                        }
-                    }
-                  else return {updateData: []}
+                    //console.log("async prepare")
+                    const arrayId = Object.keys(state.cartItems).map(key => state.cartItems[key].id)
+                    console.log("checkCart arrayId",arrayId)
+                    return await getManyProductData(arrayId)
+
                 } catch (e) {
-                    return rejectWithValue(e)
+                    return api.rejectWithValue(e)
                 }
             },
             {
@@ -152,23 +64,13 @@ export const cartSlice = createSliceWithThunk({
                     state.loadingErrors = [];
                 },
                 fulfilled: (state, action) => {
-                    //console.log("fulfilled action.payload", action.payload)
-                    const item = toDoNewItem(action.payload.item, action.meta.arg.add.selectedSize, action.meta.arg.add.addCount)
-                    const newState = action.payload.updateData.map(toDoObj)[0]
+                    console.log("fulfilled action.payload", action.payload)
+                    const newState = action.payload.map(toDoObj)[0]
+                    console.log("fulfilled newState",newState)
                     const updateResult = checkState(state.cartItems, newState)
+                    state.cartItems = updateResult.cartItems
                     state.updatingErrors = updateResult.errors
-
-                    if(item){
-                        if(action.meta.arg.add.isAdd){
-                            state.cartItems = addToCart(updateResult.cartItems, item)
-                            state.sum = updateResult.sum + item.price * item.count
-                        }
-                        if(action.meta.arg.remove.isRemove){
-                            state.cartItems = removeFromCart(updateResult.cartItems,item)
-                            state.sum = updateResult.sum - item.price * item.count
-                            console.log("state.cartItems",Object.keys(state.cartItems).length)
-                        }
-                    }
+                    state.sum = updateResult.sum
                 },
                 rejected: (state, action) => {
                     state.loadingErrors.push(action.payload as string)
@@ -178,11 +80,10 @@ export const cartSlice = createSliceWithThunk({
                 }
             }
         ),
-
-    })
+    }),
 })
 
-export const { updateCart} = cartSlice.actions
+export const {removeFromCart, checkCart, addToCart} = cartSlice.actions
 const cartReducer = cartSlice.reducer
 export default cartReducer
 

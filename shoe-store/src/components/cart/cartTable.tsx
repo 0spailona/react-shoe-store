@@ -1,5 +1,5 @@
 import {Button, NavLink, Table} from "react-bootstrap";
-import {updateCart} from "../../redux/cartSlice.ts";
+import {removeFromCart} from "../../redux/cartSlice.ts";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 
@@ -7,20 +7,14 @@ import Preloader from "../utilsComponents/preloader.tsx";
 export default function CartTable() {
     const dispatch = useAppDispatch()
     const {cartItems, sum, loading} = useAppSelector(state => state.cart)
-    // console.log("cartTable lastItems: ", lastItems)
     const keysCartItems = Object.keys(cartItems)
     if (keysCartItems.length === 0) {
         return (
             <h4 className="great-block text-center text-secondary p-5">Ваша корзина пуста</h4>
         )
     }
-    const removeItem = (id: number,size:string) => {
-        const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
-        dispatch(updateCart({
-            cart: arrayId,
-            id: id, add: {isAdd: false, selectedSize: "", addCount: 0},
-            remove:{isRemove: true,selectedSize:size}
-        }))
+    const removeItem = (key:string) => {
+        dispatch(removeFromCart(key))
     }
 
 
@@ -51,7 +45,7 @@ export default function CartTable() {
                             <td>{cartItems[key].price * cartItems[key].count} руб.</td>
                             <td>
                                 <Button variant="outline-danger" size="sm"
-                                        onClick={() => removeItem(cartItems[key].id,cartItems[key].size)}>Удалить</Button>
+                                        onClick={() => removeItem(key)}>Удалить</Button>
                             </td>
                         </tr>
                     )}
