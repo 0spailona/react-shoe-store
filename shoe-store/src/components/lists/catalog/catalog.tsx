@@ -28,10 +28,8 @@ type Props = {
 class Catalog extends Component<Props> {
 
     state: {
-        url: string,
         inputValue: string,
     } = {
-        url: import.meta.env.VITE_URL,
         inputValue: "",
     }
 

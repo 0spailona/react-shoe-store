@@ -1,6 +1,6 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
 import {FullItem} from "../config.ts";
-import {checkState, getItemId, getManyProductData, toDoObj} from "./cartUtils.ts";
+import {checkState, getItemId, getManyProductData, getUpdateDate} from "./cartUtils.ts";
 
 export type CartItem = {
     size: string,
@@ -32,7 +32,6 @@ const createSliceWithThunk = buildCreateSlice({
 })
 
 
-
 export const cartSlice = createSliceWithThunk({
     name: "cart",
     initialState,
@@ -43,15 +42,25 @@ export const cartSlice = createSliceWithThunk({
         }),
         addToCart: create.reducer((state, action: PayloadAction<CartItem>) => {
             state.loading = true
-            state.cartItems[getItemId(action.payload)] = action.payload
-            //console.log("state.cartItems[getItemId(action.payload)]",state.cartItems[getItemId(action.payload)])
+            const id = getItemId(action.payload)
+            const item: CartItem = state.cartItems[id]
+            if (!item) {
+                state.cartItems[id] = action.payload
+            } else {
+                state.cartItems[id].count += action.payload.count
+            }
+        }),
+        cleanCart: create.reducer((state) => {
+            state.loading = true
+            state.cartItems = {}
+            state.loading = false
         }),
 
         checkCart: create.asyncThunk<Array<FullItem>, Cart>(async (state, api) => {
                 try {
                     //console.log("async prepare")
                     const arrayId = Object.keys(state.cartItems).map(key => state.cartItems[key].id)
-                    console.log("checkCart arrayId",arrayId)
+                    //console.log("checkCart arrayId", arrayId)
                     return await getManyProductData(arrayId)
 
                 } catch (e) {
@@ -64,9 +73,8 @@ export const cartSlice = createSliceWithThunk({
                     state.loadingErrors = [];
                 },
                 fulfilled: (state, action) => {
-                    console.log("fulfilled action.payload", action.payload)
-                    const newState = action.payload.map(toDoObj)[0]
-                    console.log("fulfilled newState",newState)
+                    //console.log("fulfilled action.payload", action.payload)
+                    const newState = getUpdateDate(action.payload)
                     const updateResult = checkState(state.cartItems, newState)
                     state.cartItems = updateResult.cartItems
                     state.updatingErrors = updateResult.errors
@@ -83,7 +91,7 @@ export const cartSlice = createSliceWithThunk({
     }),
 })
 
-export const {removeFromCart, checkCart, addToCart} = cartSlice.actions
+export const {removeFromCart, checkCart, addToCart,cleanCart} = cartSlice.actions
 const cartReducer = cartSlice.reducer
 export default cartReducer
 

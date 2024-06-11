@@ -33,8 +33,8 @@ export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
     const errors = []
     const updateCartItems = {...cartItems};
 
-     console.log("checkState cartItems", updateCartItems)
-    console.log("checkState lastItems", lastItems)
+     //console.log("checkState cartItems", updateCartItems)
+    //console.log("checkState lastItems", lastItems)
     for (const key of Object.keys(updateCartItems)) {
         //console.log("checkState key", key)
 
@@ -58,10 +58,23 @@ export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
     return {errors, cartItems: updateCartItems, sum}
 }
 
+export function getUpdateDate(arr:Array<FullItem>){
+    if(arr.length === 0) return {}
 
-export function toDoObj(obj?: FullItem) {
+    const newArr = arr.map(toDoObj)
+    const result: {
+        [id: string]: {
+            price: number,
+        }
+    } = {}
+    for(const item of newArr){
+        const key = Object.keys(item)[0]
+        result[key] = item[key]
+    }
+        return result
+}
 
-    if (!obj) return {}
+function toDoObj(obj: FullItem) {
     const availableSizes = []
 
     for (const size of obj.sizes) {

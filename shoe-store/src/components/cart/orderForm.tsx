@@ -1,29 +1,48 @@
-
 import {Button, Card, Form} from "react-bootstrap";
+import {Component} from "react";
+import * as React from "react";
 
-export default function OrderForm(){
+export default class OrderForm extends Component {
 
-    return (
-             <section className="order">
+    state: {
+        inputValuePhone: string,
+        inputValueAddress: string,
+    } = {
+        inputValuePhone: "",
+        inputValueAddress: "",
+    }
+
+    onFormSubmit(e:React.FormEvent<HTMLFormElement>){
+        e.preventDefault()
+
+    }
+
+    render() {
+        return (
+            <section className="order">
                 <h2 className="text-center">Оформить заказ</h2>
                 <Card style={{maxWidth: "30rem", margin: "0 auto"}}>
-                    <Form className="card-body">
-                        <Form.Group className="form-group">
-                            <label htmlFor="phone">Телефон</label>
-                            <input className="form-control" id="phone" placeholder="Ваш телефон"/>
-                        </Form.Group>
-                        <Form.Group className="form-group">
-                            <label htmlFor="address">Адрес доставки</label>
-                            <input className="form-control" id="address" placeholder="Адрес доставки"/>
-                        </Form.Group>
-                        <Form.Group className="form-group form-check">
-                            <input type="checkbox" className="form-check-input" id="agreement"/>
-                            <label className="form-check-label" htmlFor="agreement">Согласен с правилами
-                                доставки</label>
-                        </Form.Group>
-                        <Button variant="outline-secondary" type="submit">Оформить</Button>
+                    <Form onSubmit={(e)=>this.onFormSubmit(e)}>
+                        <Card.Body>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="phone">Телефон</Form.Label>
+                                <Form.Control id="phone" placeholder="Ваш телефон"
+                                              pattern={""}
+                                              onChange={(e) => this.setState({inputValue: e.target.value})}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label htmlFor="address">Адрес доставки</Form.Label>
+                                <Form.Control id="address" placeholder="Адрес доставки"
+                                              onChange={(e) => this.setState({inputValue: e.target.value})}/>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Check type="checkbox" id="agreement" label="Согласен с правилами
+                                доставки" required/>
+                            </Form.Group>
+                            <Button variant="outline-secondary">Оформить</Button></Card.Body>
                     </Form>
                 </Card>
             </section>
-    )
+        )
+    }
 }

@@ -13,7 +13,7 @@ export default function CartTable() {
             <h4 className="great-block text-center text-secondary p-5">Ваша корзина пуста</h4>
         )
     }
-    const removeItem = (key:string) => {
+    const removeItem = (key: string) => {
         dispatch(removeFromCart(key))
     }
 
@@ -37,7 +37,7 @@ export default function CartTable() {
                     {keysCartItems.map((key, index) =>
                         <tr key={key}>
                             <td scope="row">{index + 1}</td>
-                            <td><NavLink className="text-secondary"
+                            <td><NavLink className={cartItems[key].count > 0 ? "text-secondary" : "text-danger"}
                                          href="/products/1.html">{cartItems[key].title}</NavLink></td>
                             <td>{cartItems[key].size}</td>
                             <td>{cartItems[key].count}</td>
