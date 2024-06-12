@@ -5,14 +5,14 @@ const basedUrl = import.meta.env.VITE_URL
 
 export type TopSalesListStore = {
     loading: boolean,
-    topSalesList: Array<Item>,
+    topSalesListItems: Array<Item>,
     hasItems: boolean,
     error: string
 }
 
 const initialState: TopSalesListStore = {
     loading: true,
-    topSalesList: [],
+    topSalesListItems: [],
     hasItems: false,
     error: ""
 }
@@ -22,10 +22,10 @@ const createSliceWithThunk = buildCreateSlice({
 })
 
 export const topSalesListSlice = createSliceWithThunk({
-    name: "catalogList",
+    name: "topSalesList",
     initialState,
     selectors: {
-        topSalesList: (state) => state.topSalesList,
+        topSalesListItems: (state) => state.topSalesListItems,
         loadingState: (state => state.loading),
         error: (state => state.error)
     },
@@ -36,16 +36,12 @@ export const topSalesListSlice = createSliceWithThunk({
                     const fullUrl = `${basedUrl}${pattern}`;
                     const response = await fetch(fullUrl)
 
-                    //console.log("fetchTopSalesList response",response)
-
                     if (Math.trunc(response.status / 100) !== 2) {
                         return rejectWithValue("Loading error!")
                     }
 
-                    const list = await response.json();
-                    //console.log("fetchTopSalesList list", list)
-                    return list
-                    //return await response.json();
+                    return await response.json()
+
                 } catch (e) {
                     return rejectWithValue(e)
                 }
@@ -54,10 +50,10 @@ export const topSalesListSlice = createSliceWithThunk({
                 pending: (state) => {
                     state.loading = true;
                     state.error = "";
-                    state.topSalesList = []
+                    state.topSalesListItems = []
                 },
                 fulfilled: (state, action) => {
-                    state.topSalesList = action.payload
+                    state.topSalesListItems = action.payload
                     state.hasItems = action.payload.length !== 0
                     state.error = ""
                 },
@@ -69,12 +65,11 @@ export const topSalesListSlice = createSliceWithThunk({
                 }
             }
         ),
-
     }),
 })
 
 export const {fetchTopSalesList} = topSalesListSlice.actions
-export const {topSalesList, loadingState, error} = topSalesListSlice.selectors
+export const {topSalesListItems, loadingState, error} = topSalesListSlice.selectors
 
 const topSalesListReducer = topSalesListSlice.reducer
 export default topSalesListReducer

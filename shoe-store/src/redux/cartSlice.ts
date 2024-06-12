@@ -56,10 +56,14 @@ export const cartSlice = createSliceWithThunk({
             state.loading = false
         }),
 
-        checkCart: create.asyncThunk<Array<FullItem>, Cart>(async (state, api) => {
+        checkCart: create.asyncThunk<Array<FullItem>>(async (_, api) => {
                 try {
                     //console.log("async prepare")
-                    const arrayId = Object.keys(state.cartItems).map(key => state.cartItems[key].id)
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    const cart = api.getState().cart
+                   // console.log("cart",cart)
+                    const arrayId = Object.keys(cart.cartItems).map(key => cart.cartItems[key].id)
                     //console.log("checkCart arrayId", arrayId)
                     return await getManyProductData(arrayId)
 

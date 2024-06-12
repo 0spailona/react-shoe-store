@@ -9,8 +9,6 @@ export type CatalogListStore = {
     categories: Array<{ id: number, title: string }>,
     activeCategory: number,
     catalogList: Array<Item>,
-    listLength: number,
-    searchResultList: Array<Item>,
     searchStr: string,
     error: string
 }
@@ -21,8 +19,6 @@ const initialState: CatalogListStore = {
     categories: [],
     activeCategory: 0,
     catalogList: [],
-    listLength: 0,
-    searchResultList: [],
     searchStr: "",
     error: ""
 }
@@ -36,13 +32,7 @@ export const catalogListSlice = createSliceWithThunk({
     initialState,
     selectors: {
         catalogList: (state) => state.catalogList,
-        hasMore: (state) => state.hasMore,
-        categories: (state) => state.categories,
-        activeCategory: (state) => state.activeCategory,
-        searchStr: (state => state.searchStr),
-        loadingState: (state => state.loading),
         searchError: (state => state.error),
-        listLength: (state => state.listLength),
     },
     reducers: (create) => ({
         cleanStore: create.reducer((state) => {
@@ -51,9 +41,7 @@ export const catalogListSlice = createSliceWithThunk({
             state.catalogList = []
             state.error = ""
         }),
-        toSearchStr: create.reducer((state, action: PayloadAction<string>) => {
-            state.searchStr = action.payload
-        }),
+
 
         fetchCategories: create.asyncThunk<Array<Item>, string>(
             async (pattern, {rejectWithValue}) => {
@@ -82,83 +70,79 @@ export const catalogListSlice = createSliceWithThunk({
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string
-                    state.searchResultList = []
+                    //state.searchResultList = []
                 },
                 settled: (state) => {
                     state.loading = false
                 }
             }
         ),
-        fetchCatalogList: create.asyncThunk<Array<Item>, {
-            categoryId: number,
-            searchStr: string,
-            offset: { isOffset: boolean, size: number }
-        }>(
-            async (pattern, {rejectWithValue}) => {
-                try {
+        toSearchStr: create.reducer((state, action: PayloadAction<string>) => {
+            state.loading = true
+            state.searchStr = action.payload
+        }),
+        toActiveCategory: create.reducer((state, action: PayloadAction<number>) => {
+            state.loading = true
+            state.activeCategory = action.payload
+        }),
 
+        fetchCatalogList: create.asyncThunk<Array<Item>>(
+            async (_, api) => {
+                try {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    const catalogStore = api.getState().catalogList
+                    //console.log("fetchCatalogList 2 from middleware catalogStore", catalogStore)
+                    const activeCategory = catalogStore.activeCategory
+                    const searchStr = catalogStore.searchStr
+                    const size = catalogStore.catalogList.length
                     let fullUrl = `${basedUrl}/api/items?`;
 
-                    if (pattern.searchStr) {
-                        fullUrl += `q=${(pattern.searchStr)}&`;
+                    if (searchStr) {
+                        fullUrl += `q=${searchStr}&`;
                     }
 
-                    if (pattern.categoryId) {
-                        fullUrl += `categoryId=${(pattern.categoryId)}&`
+                    if (activeCategory) {
+                        fullUrl += `categoryId=${activeCategory}&`
                     }
 
-                    if (pattern.offset.isOffset) {
-                        //console.log("fetchCatalogList pattern.offset.size",pattern.offset.size)
-                        fullUrl += `offset=${pattern.offset.size}&`
-                    }
+                    fullUrl += `offset=${size}&`
 
                     const response = await fetch(fullUrl)
 
                     if (Math.trunc(response.status / 100) !== 2) {
-                        return rejectWithValue("Loading error!")
+                        return api.rejectWithValue("Loading error!")
                     }
-                    const list = await response.json();
-                    //console.log("fetchCatalogList list", list)
-                    return list
+                    return await response.json()
                 } catch (e) {
-                    return rejectWithValue(e)
+                    return api.rejectWithValue(e)
                 }
             },
             {
                 pending: (state) => {
                     state.loading = true;
                     state.error = "";
-                    state.searchResultList = []
                 },
                 fulfilled: (state, action) => {
-                    state.listLength = state.catalogList.length + action.payload.length
-
-                    if (action.meta.arg.offset.isOffset) {
-                        //console.log("offset")
-                        state.catalogList = [...state.catalogList, ...action.payload]
-                    } else {
-                        state.catalogList = action.payload
-                    }
-                    state.searchStr = action.meta.arg.searchStr ? action.meta.arg.searchStr : ""
-                    state.activeCategory = action.meta.arg.categoryId ? action.meta.arg.categoryId : state.activeCategory
+                    //state.listLength = state.catalogList.length + action.payload.length
+                    state.catalogList = [...state.catalogList, ...action.payload]
                     state.hasMore = action.payload.length >= countLoadItems
                     state.error = ""
                 },
                 rejected: (state, action) => {
                     state.error = action.payload as string
-                    state.searchResultList = []
                 },
                 settled: (state) => {
                     state.loading = false
                 }
             }
-        )
+        ),
     }),
 })
 
 
-export const { cleanStore,toSearchStr, fetchCatalogList, fetchCategories} = catalogListSlice.actions
-export const {catalogList, listLength, searchStr, loadingState, searchError} = catalogListSlice.selectors
+export const {cleanStore,fetchCatalogList, toActiveCategory, toSearchStr, fetchCategories} = catalogListSlice.actions
+export const {catalogList, searchError} = catalogListSlice.selectors
 
 const catalogListReducer = catalogListSlice.reducer
 export default catalogListReducer

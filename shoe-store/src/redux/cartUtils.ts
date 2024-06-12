@@ -19,7 +19,7 @@ export function getManyProductData(ids: number[]) {
 }
 
 export  function getItemId(item: CartItem) {
-    console.log("getItemId item", item)
+   // console.log("getItemId item", item)
     const id = `${item.id}-${item.size}`
     // console.log("Get id", item, id);
     return id;

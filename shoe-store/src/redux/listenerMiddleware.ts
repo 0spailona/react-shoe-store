@@ -1,4 +1,6 @@
 import {addToCart,removeFromCart, checkCart} from "./cartSlice.ts"
+import {toActiveCategory,fetchCatalogList,toSearchStr,cleanStore} from "./catalogListSlice.ts"
+import {sendData,saveOwner} from "./orderFormSlice.ts";
 
 import {createListenerMiddleware, addListener, isAnyOf, Action} from '@reduxjs/toolkit'
 import type { TypedStartListening, TypedAddListener } from '@reduxjs/toolkit'
@@ -22,8 +24,24 @@ startAppListening({
     matcher: isAnyOf(removeFromCart,addToCart),
     effect: (_action:Action, listenerApi) => {
         //console.log("startAppListening removeFromCart")
-        const {cart} = listenerApi.getState()
-        console.log("startAppListening state", cart)
-        listenerApi.dispatch(checkCart(cart))
+        //const {cart} = listenerApi.getState()
+        //console.log("startAppListening state", cart)
+        listenerApi.dispatch(checkCart())
+    }
+})
+
+startAppListening({
+    matcher: isAnyOf(toActiveCategory,toSearchStr),
+    effect: (_action:Action, listenerApi) => {
+        listenerApi.dispatch(cleanStore())
+        listenerApi.dispatch(fetchCatalogList())
+    }
+})
+
+startAppListening({
+    matcher: isAnyOf(saveOwner),
+    effect: (_action:Action, listenerApi) => {
+        listenerApi.dispatch(checkCart())
+        listenerApi.dispatch(sendData())
     }
 })

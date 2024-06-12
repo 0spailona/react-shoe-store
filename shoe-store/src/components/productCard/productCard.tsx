@@ -13,7 +13,6 @@ export default function ProductCard() {
     const dispatch = useAppDispatch()
 
     const {item, loading} = useAppSelector(state => state.productCard)
-    //const {cartItems} = useAppSelector(state => state.cart)
 
     const [count, setCount] = useState(1);
     const [selectedSize, setSelectedSize] = useState({
@@ -25,12 +24,9 @@ export default function ProductCard() {
         if(!item.size){
             return
         }
-        //const arrayId = Object.keys(cartItems).map(key => cartItems[key].id)
-        /*dispatch(updateCart({cart:arrayId,id:item.id,add:{selectedSize:item.size, addCount: item.count}}))*/
         dispatch(addToCart(item))
             navigate(`/cart`)
     }
-
 
     const {id} = useParams()
 
@@ -63,7 +59,7 @@ export default function ProductCard() {
     }
 
     const drawSizes = (index: number, data: { size: string, available: boolean, }) => {
-       // console.log("drawSizes", index, data.size, data.available)
+
         if (data.available) {
             return (
                 <span key={index}

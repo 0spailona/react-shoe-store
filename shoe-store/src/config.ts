@@ -31,7 +31,7 @@ export type FullItem = {
     title: string,
 }
 
-export const initialStateProductCard = {
+export const initialStateFullItem = {
     category: -1,
     color: "",
     heelSize: "",
@@ -45,21 +45,6 @@ export const initialStateProductCard = {
     sizes: [],
     sku: "",
     title: "",
-}
-
-export type CartFirstItem = {
-    size: string,
-    count: number,
-    id: number,
-    price:number
-}
-
-export type CartLastItem = {
-    size: string,
-    count: number,
-    id: number,
-    price:number,
-    title: string,
 }
 
 export const countLoadItems = 6

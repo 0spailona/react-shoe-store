@@ -1,5 +1,5 @@
 import {Button, NavLink, Table} from "react-bootstrap";
-import {removeFromCart} from "../../redux/cartSlice.ts";
+import { removeFromCart} from "../../redux/cartSlice.ts";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 

@@ -1,11 +1,11 @@
 import List from "../list.tsx";
 import {useAppSelector} from "../../../redux/hooks.ts";
+import {topSalesListItems} from "../../../redux/topSalesListSlice.ts";
+
 
 export default function TopSalesList() {
 
-    const list = useAppSelector(state => state.topsSalesList.topSalesList)
-
     return (
-        <List items={list}/>
+        <List items={useAppSelector(topSalesListItems)}/>
     )
 }

@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice} from "@reduxjs/toolkit";
-import {FullItem, initialStateProductCard} from "../config.ts";
+import {FullItem, initialStateFullItem} from "../config.ts";
 
 const basedUrl = import.meta.env.VITE_URL
 
@@ -10,7 +10,7 @@ export type ProductCard = {
 }
 
 const initialState:ProductCard = {
-    item: initialStateProductCard,
+    item: initialStateFullItem,
     error:"",
     loading:true
 }

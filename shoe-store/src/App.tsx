@@ -9,6 +9,7 @@ import Banner from "./components/banner.tsx";
 import Catalog from "./components/lists/catalog/catalog.tsx";
 import ProductCard from "./components/productCard/productCard.tsx";
 import Cart from "./components/cart/Cart.tsx";
+import ModalError from "./components/utilsComponents/modalError.tsx";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                 <Banner/>
             </Container>
             <Container>
+                <ModalError/>
                 <div className="row">
                     <div className="col">
                         <Routes>

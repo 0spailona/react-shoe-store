@@ -2,6 +2,8 @@ import { Modal} from "react-bootstrap";
 
 export default function ModalError() {
 
+
+
     return (
         <Modal>
             <Modal.Header closeButton>

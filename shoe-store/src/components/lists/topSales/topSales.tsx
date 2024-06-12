@@ -5,7 +5,7 @@ import {fetchTopSalesList} from "../../../redux/topSalesListSlice.ts";
 import {useEffect} from "react";
 
 export default function TopSales() {
-    const {loading, hasItems} = useAppSelector(state => state.topsSalesList);
+    const {loading, hasItems} = useAppSelector(state => state.topSalesList);
 
     const dispatch = useAppDispatch();
 
