@@ -26,10 +26,12 @@ export function getItemsData(cartItems: { [id: string]: CartItem }) {
 
 export async function fetchDataToServer(content: PostBody) {
     const fullUrl = `${basedUrl}/api/order`
+    const body = JSON.stringify(content)
     //const content = {owner,items}
-    const response = await fetch(fullUrl, {method: "POST", body: JSON.stringify(content)})
-    if (!response.ok) {
+    const response = await fetch(fullUrl, {method: "POST", body: body,mode:"no-cors"})
+    console.log("response",response)
+    /*if (!response.ok) {
         throw new Error("Loading error!")
-    }
-    return await response.json();
+    }*/
+    //return await response.json();
 }

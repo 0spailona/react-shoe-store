@@ -48,8 +48,9 @@ export const orderFormSlice = createSliceWithThunk({
                     const owner = api.getState().orderForm.owner
                     const items = getItemsData(cartItems)
                     console.log("sendData items",items)
-                    const answer = await fetchDataToServer({owner,items})
-                    console.log("answer",answer)
+                    //const answer =
+                        await fetchDataToServer({owner,items})
+                   // console.log("answer",answer)
                     return true
 
                 } catch (e) {
