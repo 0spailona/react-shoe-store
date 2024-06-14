@@ -18,7 +18,7 @@ export default function TopSales() {
             {!loading && !hasItems ? null :
                 <>
                 <section className="small-block">
-                    <h2 className="text-center">Хиты продаж!</h2>
+                    <h2 className="text-center mb-5 mt-2">Хиты продаж!</h2>
                     {loading ? <Preloader/> :
                         <TopSalesList/>}
                 </section>

@@ -16,23 +16,30 @@ export default function OrderForm() {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
         const phoneNumberData = Object.fromEntries(formData).phone.toString()
-        console.log("phoneNumberData", phoneNumberData)
+        //console.log("phoneNumberData", phoneNumberData)
+        const phone = formatNumber(phoneNumberData)
+        console.log("phone",phone)
         const addressData = Object.fromEntries(formData).address.toString()
-        console.log("address", addressData)
+        //console.log("address", addressData)
         dispatch(saveOwner({phone: phoneNumberData, address: addressData}))
     }
 
+    const formatNumber = (str:string) =>{
+        const firstSymbol = str[0] === '+' ? '+' : '+7';
+        const formatStr = str.split('').filter(x => parseInt(x)).join('')
+        return `${firstSymbol}${formatStr.slice(1).replace(/\D/g, '')}`;
+    }
 
     return (
         <section className="order">
-            {loading? <Preloader/> : <><h2 className="text-center">Оформить заказ</h2>
+            {loading ? <Preloader/> : <><h2 className="text-center">Оформить заказ</h2>
                 <Card style={{maxWidth: "30rem", margin: "0 auto"}}>
                     <Form onSubmit={(e) => onFormSubmit(e)}>
                         <Card.Body>
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="phone">Телефон</Form.Label>
                                 <Form.Control id="phone" name="phone" placeholder="Ваш телефон"
-                                    //pattern={""}
+                                              pattern={"^[0-9\\+][[0-9]\\(\\\\)\\ \\-]{4,14}[0-9]$"}
                                               onChange={(e) => setInputValuePhone(e.target.value)}
                                               value={inputValuePhone}
                                               required/>

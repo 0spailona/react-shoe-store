@@ -42,19 +42,6 @@ class Catalog extends Component<Props> {
         this.setState({inputValue: this.props.searchStr})
     }
 
-    getFirstListByCategories(categoryId: number) {
-        this.setState({inputValue: this.props.searchStr})
-        this.props.toActiveCategory(categoryId)
-    }
-
-    async getFirstListBySearch(str: string) {
-        this.props.toSearchStr(str)
-    }
-
-    getMoreItems() {
-        this.props.loadList()
-    }
-
     componentDidUpdate(prevProps: Readonly<Props>) {
         if(prevProps.searchStr !== this.props.searchStr){
             this.setState({inputValue: this.props.searchStr})
@@ -69,20 +56,20 @@ class Catalog extends Component<Props> {
                        className={`${this.state.inputValue === this.props.searchStr ? "text-primary" : ""}`}
                        value={this.state.inputValue}
                        placeholder="Поиск"
-                       onKeyUp={e => e.key === "Enter" && this.getFirstListBySearch(e.currentTarget.value)}
+                       onKeyUp={e => e.key === "Enter" && this.props.toSearchStr(e.currentTarget.value)}
                        onChange={(e) => this.setState({inputValue: e.target.value})}
                 />
             </Form>;
 
         const categories = this.props.categories.length === 0 ? null :
             <CatalogNav activeCategory={this.props.activeCategory} categories={this.props.categories}
-                        changeActiveCategory={(categoryId) => this.getFirstListByCategories(categoryId)}/>;
+                        changeActiveCategory={(categoryId) =>this.props.toActiveCategory(categoryId)}/>;
 
         const preloader = this.props.loading ? <Preloader/> : null;
         const moreButton = this.props.hasMore ?
             <div className="text-center">
                 <Button variant="outline-secondary" disabled={this.props.loading}
-                        onClick={this.getMoreItems.bind(this)}>Загрузить
+                        onClick={()=>this.props.loadList()}>Загрузить
                     ещё</Button>
             </div> : null;
 

@@ -23,9 +23,6 @@ export const addAppListener = addListener as TypedAddListener<
 startAppListening({
     matcher: isAnyOf(removeFromCart,addToCart),
     effect: (_action:Action, listenerApi) => {
-        //console.log("startAppListening removeFromCart")
-        //const {cart} = listenerApi.getState()
-        //console.log("startAppListening state", cart)
         listenerApi.dispatch(checkCart())
     }
 })

@@ -9,13 +9,13 @@ export default function Cart() {
 
     const dispatch = useAppDispatch()
     const {cartItems} = useAppSelector(state => state.cart)
-    const sucsess = useAppSelector(state => state.orderForm.success)
+    const success = useAppSelector(state => state.orderForm.success)
     useEffect(() => {
         dispatch(checkCart())
     }, [])
 
     return (
-        <>{sucsess ? <h2 className="text-center">Заказ успешно оформлен</h2> : <>
+        <>{success ? <div className="small-block"><h2 className="text-center m-5">Заказ успешно оформлен</h2></div> : <>
             <section className="cart">
                 <h2 className="text-center">Корзина</h2>
                 <CartTable/>
