@@ -1,4 +1,4 @@
-import {FullItem} from "../config.ts";
+import {FullItem} from "../../../config.ts";
 import {CartItem} from "./cartSlice.ts";
 
 const basedUrl = import.meta.env.VITE_URL
@@ -42,13 +42,13 @@ export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
         const lastItem = lastItems[key];
 
         if (!lastItem) {
-            errors.push({id: key, message: "Product not found!"})
+            errors.push(`Product ${cartItem.title} ${cartItem.size} is not found!`)
             cartItem.count = 0
             continue;
         }
 
         if (cartItem.price !== lastItem.price) {
-            errors.push({id: key, message: "Change price"})
+            errors.push(`Product ${cartItem.title} ${cartItem.size} price was changed`)
             cartItem.price = lastItems[key].price
         }
     }

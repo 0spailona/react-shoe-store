@@ -5,23 +5,30 @@ import {
     fetchCategories,
     toActiveCategory,
     toSearchStr
-} from "../../../redux/catalogListSlice.ts";
+} from "../../../redux/slices/catalogListSlice.ts";
 import {useAppDispatch, useAppSelector} from "../../../redux/hooks.ts";
 import {Button, Form} from "react-bootstrap";
 import CatalogNav from "./catalogNav.tsx";
 import Preloader from "../../utilsComponents/preloader.tsx";
 import CatalogList from "./catalogList.tsx";
 
-type Props ={
+type Props = {
     isHasSearchForm: boolean,
 }
 
-export default function CatalogFunc({isHasSearchForm}:Props){
+export default function CatalogFunc({isHasSearchForm}: Props) {
 
     const dispatch = useAppDispatch()
-    const {categories,activeCategory,hasMore,searchStr, loading} = useAppSelector(state => state.catalogList)
-
-    const [inputValue,setInputValue]=useState(searchStr)
+    const {
+        categories,
+        activeCategory,
+        hasMore,
+        searchStr,
+        loadingList,
+        loadingCategories
+    } = useAppSelector(state => state.catalogList)
+    //const [loadingStatus, setLoadingStatus] = useState(loading)
+    const [inputValue, setInputValue] = useState(searchStr)
 
     useEffect(() => {
         dispatch(cleanStore())
@@ -47,25 +54,29 @@ export default function CatalogFunc({isHasSearchForm}:Props){
 
     const categoriesList = categories.length === 0 ? null :
         <CatalogNav activeCategory={activeCategory} categories={categories}
-                    changeActiveCategory={(categoryId) =>dispatch(toActiveCategory(categoryId))}/>;
+                    changeActiveCategory={(categoryId) => dispatch(toActiveCategory(categoryId))}/>;
 
-    const preloader = loading ? <Preloader/> : null;
+    const preloaderCategories = loadingCategories ? <Preloader/> : null;
+    const preloaderList = loadingList ? <Preloader/> : null;
     const moreButton = hasMore ?
         <div className="text-center">
-            <Button variant="outline-secondary" disabled={loading}
-                    onClick={()=>dispatch(fetchCatalogList())}>Загрузить
+            <Button variant="outline-secondary" disabled={loadingList}
+                    onClick={() => dispatch(fetchCatalogList())}>Загрузить
                 ещё</Button>
         </div> : null;
 
     return (
-        <section className="catalog">
-            <h2 className="text-center">Каталог</h2>
+        <section className="catalog small-block">
+
+            <h2 className={`text-center ${isHasSearchForm ? "mb-5" : ""}`}>Каталог</h2>
             {searchField}
-            {categoriesList}
-            <CatalogList/>
-            {preloader}
-            {moreButton}
+            {loadingList && loadingCategories ? <Preloader/> :
+                <> {preloaderCategories}
+                    {categoriesList}
+                    <CatalogList/>
+                    {preloaderList}
+                    {moreButton}</>
+            }
         </section>
     );
 }
-

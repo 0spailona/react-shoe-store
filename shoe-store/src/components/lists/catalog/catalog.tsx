@@ -10,7 +10,7 @@ import {
     fetchCatalogList,
     fetchCategories,
     toActiveCategory, toSearchStr
-} from "../../../redux/catalogListSlice.ts";
+} from "../../../redux/slices/catalogListSlice.ts";
 import CatalogList from "./catalogList.tsx";
 
 type Props = {

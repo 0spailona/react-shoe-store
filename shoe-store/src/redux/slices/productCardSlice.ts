@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice} from "@reduxjs/toolkit";
-import {FullItem, initialStateFullItem} from "../config.ts";
+import {FullItem, initialStateFullItem} from "../../config.ts";
 
 const basedUrl = import.meta.env.VITE_URL
 
@@ -25,7 +25,7 @@ export const productCardSlice = createSliceWithThunk({
     selectors: {
         item: (state) => state.item,
         loadingState: (state => state.loading),
-        error: (state => state.error)
+        loadingProductError: (state => state.error)
     },
     reducers: (create) => ({
         fetchProductCard: create.asyncThunk<FullItem,string>(
@@ -70,7 +70,7 @@ export const productCardSlice = createSliceWithThunk({
 })
 
 export const {fetchProductCard} = productCardSlice.actions
-export const {item, loadingState, error} = productCardSlice.selectors
+export const {item, loadingState, loadingProductError} = productCardSlice.selectors
 
 const productCardReducer = productCardSlice.reducer
 export default productCardReducer

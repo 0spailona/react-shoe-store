@@ -3,7 +3,7 @@ import {useState} from "react";
 import {useNavigate,NavLink} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../redux/hooks.ts";
 import {headerNav} from "../config.ts";
-import {toSearchStr} from "../redux/catalogListSlice.ts";
+import {toSearchStr} from "../redux/slices/catalogListSlice.ts";
 
 export default function Header() {
     const navigate = useNavigate();

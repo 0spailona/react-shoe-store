@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {FullItem} from "../config.ts";
+import {FullItem} from "../../../config.ts";
 import {checkState, getItemId, getManyProductData, getUpdateDate} from "./cartUtils.ts";
 
 export type CartItem = {
@@ -15,15 +15,15 @@ export type Cart = {
     cartItems: { [id: string]: CartItem },
     sum: number,
     loading: boolean,
-    loadingErrors: Array<string>,
-    updatingErrors: Array<{ id: string, message: string }>,
+    loadingErrors: string,
+    updatingErrors: Array<string>,
 }
 
 const initialState: Cart = {
     cartItems: {},
     sum: 0,
     loading: true,
-    loadingErrors: [],
+    loadingErrors: "",
     updatingErrors: []
 }
 
@@ -35,6 +35,13 @@ const createSliceWithThunk = buildCreateSlice({
 export const cartSlice = createSliceWithThunk({
     name: "cart",
     initialState,
+    selectors: {
+        sum: (state) => state.sum,
+        cartItems: (state => state.cartItems),
+        loadingCart: (state => state.loading),
+        loadingCartErrors: (state => state.loadingErrors),
+        updatingCartErrors: (state => state.updatingErrors)
+    },
     reducers: (create) => ({
         removeFromCart: create.reducer((state, action: PayloadAction<string>) => {
             state.loading = true
@@ -62,7 +69,7 @@ export const cartSlice = createSliceWithThunk({
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     const cart = api.getState().cart
-                   // console.log("cart",cart)
+                    // console.log("cart",cart)
                     const arrayId = Object.keys(cart.cartItems).map(key => cart.cartItems[key].id)
                     //console.log("checkCart arrayId", arrayId)
                     return await getManyProductData(arrayId)
@@ -74,7 +81,7 @@ export const cartSlice = createSliceWithThunk({
             {
                 pending: (state) => {
                     state.loading = true;
-                    state.loadingErrors = [];
+                    state.loadingErrors = "";
                 },
                 fulfilled: (state, action) => {
                     //console.log("fulfilled action.payload", action.payload)
@@ -85,7 +92,7 @@ export const cartSlice = createSliceWithThunk({
                     state.sum = updateResult.sum
                 },
                 rejected: (state, action) => {
-                    state.loadingErrors.push(action.payload as string)
+                    state.loadingErrors = action.payload as string
                 },
                 settled: (state) => {
                     state.loading = false
@@ -95,7 +102,15 @@ export const cartSlice = createSliceWithThunk({
     }),
 })
 
-export const {removeFromCart, checkCart, addToCart,cleanCart} = cartSlice.actions
+export const {removeFromCart, checkCart, addToCart, cleanCart} = cartSlice.actions
+export const {
+    sum,
+    cartItems,
+    loadingCart,
+    loadingCartErrors,
+    updatingCartErrors
+} = cartSlice.selectors
+
 const cartReducer = cartSlice.reducer
 export default cartReducer
 

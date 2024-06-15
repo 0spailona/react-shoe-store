@@ -1,7 +1,7 @@
 import Preloader from "../../utilsComponents/preloader.tsx";
 import {useAppDispatch, useAppSelector} from "../../../redux/hooks.ts";
 import TopSalesList from "./topSalesList.tsx";
-import {fetchTopSalesList} from "../../../redux/topSalesListSlice.ts";
+import {fetchTopSalesList} from "../../../redux/slices/topSalesListSlice.ts";
 import {useEffect} from "react";
 
 export default function TopSales() {

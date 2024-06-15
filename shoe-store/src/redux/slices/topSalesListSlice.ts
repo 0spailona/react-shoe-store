@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice} from "@reduxjs/toolkit";
-import {Item} from "../config.ts";
+import {Item} from "../../config.ts";
 
 const basedUrl = import.meta.env.VITE_URL
 
@@ -27,7 +27,7 @@ export const topSalesListSlice = createSliceWithThunk({
     selectors: {
         topSalesListItems: (state) => state.topSalesListItems,
         loadingState: (state => state.loading),
-        error: (state => state.error)
+        topSalesError: (state => state.error)
     },
     reducers: (create) => ({
         fetchTopSalesList: create.asyncThunk<Array<Item>,string>(
@@ -69,7 +69,7 @@ export const topSalesListSlice = createSliceWithThunk({
 })
 
 export const {fetchTopSalesList} = topSalesListSlice.actions
-export const {topSalesListItems, loadingState, error} = topSalesListSlice.selectors
+export const {topSalesListItems, loadingState, topSalesError} = topSalesListSlice.selectors
 
 const topSalesListReducer = topSalesListSlice.reducer
 export default topSalesListReducer

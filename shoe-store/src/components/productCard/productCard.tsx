@@ -4,8 +4,8 @@ import Preloader from "../utilsComponents/preloader.tsx";
 import {Alert, Button, ButtonGroup, CloseButton, Col, Image, Row} from "react-bootstrap";
 import ProductCardTable from "./productCardTable.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
-import {addToCart, CartItem} from "../../redux/cartSlice.ts";
-import {fetchProductCard} from "../../redux/productCardSlice.ts";
+import {addToCart, CartItem} from "../../redux/slices/cart/cartSlice.ts";
+import {fetchProductCard} from "../../redux/slices/productCardSlice.ts";
 
 
 export default function ProductCard() {
@@ -81,11 +81,11 @@ export default function ProductCard() {
 
     return (
         <>
-            {loading ? <Preloader/> : <>
+            {loading ? <div className="small-block"><Preloader/></div>  : <>
                 {warn ? <Alert variant="warning" show={true} className="d-flex justify-content-between"><span>Сначала выберете размер</span>
                     <CloseButton onClick={() => setWarn(false)}></CloseButton></Alert> : null}
                 <section className="catalog-item">
-                    <h2 className="text-center">{item.title}</h2>
+                    <h2 className="text-center m-5">{item.title}</h2>
                     <Row>
                         <Col md={5}>
                             <Image src={item.images[0]}

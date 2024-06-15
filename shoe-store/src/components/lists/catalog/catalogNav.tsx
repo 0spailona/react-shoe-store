@@ -1,6 +1,5 @@
 import {Nav} from "react-bootstrap";
 
-
 type Props ={
     activeCategory:number;
     categories:Array<{ id: number, title: string }>;
@@ -10,7 +9,6 @@ type Props ={
 export default function CatalogNav({activeCategory,categories,changeActiveCategory}: Props) {
 
     //console.log("CatalogNav activeCategory", activeCategory)
-
     return (
         <Nav className="justify-content-center catalog-categories m-5">
             <Nav.Item>

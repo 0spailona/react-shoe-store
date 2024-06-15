@@ -1,10 +1,10 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import cartReducer from "./cartSlice.ts";
-import catalogListReducer from "./catalogListSlice.ts";
-import topSalesListReducer from "./topSalesListSlice.ts";
-import productCardReducer from "./productCardSlice.ts";
+import cartReducer from "./slices/cart/cartSlice.ts";
+import catalogListReducer from "./slices/catalogListSlice.ts";
+import topSalesListReducer from "./slices/topSalesListSlice.ts";
+import productCardReducer from "./slices/productCardSlice.ts";
 import {listenerMiddleware} from "./listenerMiddleware.ts";
-import orderFormReducer from "./orderFormSlice.ts";
+import orderFormReducer from "./slices/orderForm/orderFormSlice.ts";
 
 
 const rootReducer = combineReducers({

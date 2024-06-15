@@ -1,26 +1,30 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {countLoadItems, Item} from "../config.ts";
+import {countLoadItems, Item} from "../../config.ts";
 
 const basedUrl = import.meta.env.VITE_URL
 
 export type CatalogListStore = {
-    loading: boolean,
+    loadingList: boolean,
+    loadingCategories:boolean,
     hasMore: boolean,
     categories: Array<{ id: number, title: string }>,
     activeCategory: number,
     catalogList: Array<Item>,
     searchStr: string,
-    error: string
+    loadingListError: string,
+    loadingCategoriesError: string
 }
 
 const initialState: CatalogListStore = {
-    loading: true,
+    loadingList: true,
+    loadingCategories:true,
     hasMore: false,
     categories: [],
     activeCategory: 0,
     catalogList: [],
     searchStr: "",
-    error: ""
+    loadingListError: "",
+    loadingCategoriesError: ""
 }
 
 const createSliceWithThunk = buildCreateSlice({
@@ -32,57 +36,58 @@ export const catalogListSlice = createSliceWithThunk({
     initialState,
     selectors: {
         catalogList: (state) => state.catalogList,
-        searchError: (state => state.error),
+        loadingListError: (state => state.loadingListError),
+        loadingCategoriesError: (state => state.loadingCategoriesError),
+        catalogLoadingList:(state => state.loadingList),
+        catalogLoadingCategories:(state => state.loadingCategories)
     },
     reducers: (create) => ({
         cleanStore: create.reducer((state) => {
-            state.loading = true
+            state.loadingList = true
+            state.loadingCategories = true
             state.hasMore = false
             state.catalogList = []
-            state.error = ""
+            state.loadingListError = ""
         }),
 
 
         fetchCategories: create.asyncThunk<Array<Item>, string>(
-            async (pattern, {rejectWithValue}) => {
+            async (pattern, api) => {
                 try {
                     const fullUrl = `${basedUrl}${pattern}`;
                     const response = await fetch(fullUrl)
 
-                    if (Math.trunc(response.status / 100) !== 2) {
-                        return rejectWithValue("Loading error!")
-                    }
-
                     return await response.json();
                 } catch (e) {
-                    return rejectWithValue(e)
+                    return api.rejectWithValue(e)
                 }
             },
             {
                 pending: (state) => {
-                    state.loading = true;
-                    state.error = "";
+                    state.loadingCategories = true;
+                    state.loadingCategoriesError = "";
                     state.categories = []
                 },
                 fulfilled: (state, action) => {
                     state.categories = action.payload
-                    state.error = ""
+                    state.loadingCategoriesError = ""
                 },
                 rejected: (state, action) => {
-                    state.error = action.payload as string
+                    state.loadingCategoriesError = action.payload as string
                     //state.searchResultList = []
                 },
                 settled: (state) => {
-                    state.loading = false
+                    //console.log("settled loading",state.loading)
+                    state.loadingCategories = false
                 }
             }
         ),
         toSearchStr: create.reducer((state, action: PayloadAction<string>) => {
-            state.loading = true
+            state.loadingList = true
             state.searchStr = action.payload
         }),
         toActiveCategory: create.reducer((state, action: PayloadAction<number>) => {
-            state.loading = true
+            state.loadingList = true
             state.activeCategory = action.payload
         }),
 
@@ -120,20 +125,21 @@ export const catalogListSlice = createSliceWithThunk({
             },
             {
                 pending: (state) => {
-                    state.loading = true;
-                    state.error = "";
+                    state.loadingList = true;
+                   // console.log("settled pending",state.loadingList)
+                    state.loadingListError = "";
                 },
                 fulfilled: (state, action) => {
                     //state.listLength = state.catalogList.length + action.payload.length
                     state.catalogList = [...state.catalogList, ...action.payload]
                     state.hasMore = action.payload.length >= countLoadItems
-                    state.error = ""
+                    state.loadingListError = ""
                 },
                 rejected: (state, action) => {
-                    state.error = action.payload as string
+                    state.loadingListError = action.payload as string
                 },
                 settled: (state) => {
-                    state.loading = false
+                    state.loadingList = false
                 }
             }
         ),
@@ -142,7 +148,7 @@ export const catalogListSlice = createSliceWithThunk({
 
 
 export const {cleanStore,fetchCatalogList, toActiveCategory, toSearchStr, fetchCategories} = catalogListSlice.actions
-export const {catalogList, searchError} = catalogListSlice.selectors
+export const {catalogList, loadingListError,loadingCategoriesError,catalogLoadingList,catalogLoadingCategories} = catalogListSlice.selectors
 
 const catalogListReducer = catalogListSlice.reducer
 export default catalogListReducer

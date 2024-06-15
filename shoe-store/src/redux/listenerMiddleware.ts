@@ -1,6 +1,6 @@
-import {addToCart,removeFromCart, checkCart} from "./cartSlice.ts"
-import {toActiveCategory,fetchCatalogList,toSearchStr,cleanStore} from "./catalogListSlice.ts"
-import {sendData,saveOwner} from "./orderFormSlice.ts";
+import {addToCart,removeFromCart, checkCart} from "./slices/cart/cartSlice.ts"
+import {toActiveCategory,fetchCatalogList,toSearchStr,cleanStore} from "./slices/catalogListSlice.ts"
+import {sendData,saveOwner} from "./slices/orderForm/orderFormSlice.ts";
 
 import {createListenerMiddleware, addListener, isAnyOf, Action} from '@reduxjs/toolkit'
 import type { TypedStartListening, TypedAddListener } from '@reduxjs/toolkit'

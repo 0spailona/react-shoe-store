@@ -1,4 +1,4 @@
-import {CartItem} from "./cartSlice.ts";
+import {CartItem} from "../cart/cartSlice.ts";
 
 const basedUrl = import.meta.env.VITE_URL
 

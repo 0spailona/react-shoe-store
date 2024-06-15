@@ -1,6 +1,6 @@
-import {Cart} from "./redux/cartSlice.ts";
-import {CatalogListStore} from "./redux/catalogListSlice.ts";
-import {TopSalesListStore} from "./redux/topSalesListSlice.ts";
+import {Cart} from "./redux/slices/cart/cartSlice.ts";
+import {CatalogListStore} from "./redux/slices/catalogListSlice.ts";
+import {TopSalesListStore} from "./redux/slices/topSalesListSlice.ts";
 
 export const headerNav = [{pageName: "Главная", href: "/"},
     {pageName: "Каталог", href: "/catalog"},

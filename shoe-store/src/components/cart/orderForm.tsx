@@ -2,7 +2,7 @@ import {Button, Card, Form} from "react-bootstrap";
 import * as React from "react";
 import {useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
-import {saveOwner} from "../../redux/orderFormSlice.ts";
+import {saveOwner} from "../../redux/slices/orderForm/orderFormSlice.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
 
 export default function OrderForm() {
@@ -32,7 +32,7 @@ export default function OrderForm() {
 
     return (
         <section className="order">
-            {loading ? <Preloader/> : <><h2 className="text-center">Оформить заказ</h2>
+            {loading ? <Preloader/> : <><h2 className="text-center mb-4">Оформить заказ</h2>
                 <Card style={{maxWidth: "30rem", margin: "0 auto"}}>
                     <Form onSubmit={(e) => onFormSubmit(e)}>
                         <Card.Body>
