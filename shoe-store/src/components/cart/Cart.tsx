@@ -15,7 +15,7 @@ export default function Cart() {
     }, [])
 
     return (
-        <>{success ? <div className="small-block"><h2 className="text-center m-5">Заказ успешно оформлен</h2></div> : <>
+        <>{success ? <div className="small-block"><h2 className="text-center m-5">Заказ успешно оформлен!</h2></div> : <>
             <section className="cart small-block">
                 <h2 className="text-center mb-4">Корзина</h2>
                 <CartTable/>

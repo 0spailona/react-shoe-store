@@ -10,7 +10,7 @@ export default function CatalogNav({activeCategory,categories,changeActiveCatego
 
     //console.log("CatalogNav activeCategory", activeCategory)
     return (
-        <Nav className="justify-content-center catalog-categories m-5">
+        <Nav className="justify-content-center catalog-categories mb-5">
             <Nav.Item>
                 <Nav.Link href="#"
                           className={`${activeCategory === 0 ? "active" : "text-secondary"}`}

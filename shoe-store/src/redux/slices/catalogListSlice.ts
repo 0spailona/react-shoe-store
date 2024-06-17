@@ -140,6 +140,7 @@ export const catalogListSlice = createSliceWithThunk({
                 },
                 settled: (state) => {
                     state.loadingList = false
+                    state.loadingCategories = false
                 }
             }
         ),

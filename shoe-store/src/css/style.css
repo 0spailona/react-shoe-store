@@ -118,7 +118,7 @@ section {
 /* Banner */
 .banner {
     position: relative;
-    min-height: 120px;
+    min-height: 150px;
 }
 
 .banner-header {

@@ -19,13 +19,19 @@ export type Cart = {
     updatingErrors: Array<string>,
 }
 
+const localeStorageCart = localStorage.getItem("cart")
+//console.log("cartSlice localeStorageCart",localeStorageCart)
+//console.log("cartSlice localeStorageCart parse",JSON.parse(localeStorageCart))
+
 const initialState: Cart = {
-    cartItems: {},
+    cartItems: localeStorageCart ? JSON.parse(localeStorageCart) : {},
     sum: 0,
     loading: true,
     loadingErrors: "",
     updatingErrors: []
 }
+
+//console.log("cartSlice initialState", initialState)
 
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
@@ -62,9 +68,16 @@ export const cartSlice = createSliceWithThunk({
             state.cartItems = {}
             state.loading = false
         }),
+/*
+        getCartFromLocalStorage: create.reducer((state) => {
+            state.loading = true
+            state.cartItems = JSON.parse(localStorage.getItem("cart")) | initialState
+            state.loading = false
+        }),*/
 
         checkCart: create.asyncThunk<Array<FullItem>>(async (_, api) => {
                 try {
+                    console.log("checkCart localeStorageCart",localStorage.getItem("cart"))
                     //console.log("async prepare")
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
@@ -90,6 +103,7 @@ export const cartSlice = createSliceWithThunk({
                     state.cartItems = updateResult.cartItems
                     state.updatingErrors = updateResult.errors
                     state.sum = updateResult.sum
+                    localStorage.setItem("cart",JSON.stringify(state.cartItems))
                 },
                 rejected: (state, action) => {
                     state.loadingErrors = action.payload as string

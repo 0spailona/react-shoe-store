@@ -11,6 +11,7 @@ import ProductCard from "./components/productCard/productCard.tsx";
 import Cart from "./components/cart/Cart.tsx";
 import ModalError from "./components/utilsComponents/modalError.tsx";
 import CatalogFunc from "./components/lists/catalog/catalogFunc.tsx";
+import NotFound from "./components/utilsComponents/notFound.tsx";
 
 
 function App() {
@@ -18,10 +19,10 @@ function App() {
     return (
         <>
             <Header/>
-            <Container className="border-danger">
+            <Container>
                 <Banner/>
             </Container>
-            <Container className="border-black">
+            <Container>
                 <ModalError/>
                 <div className="row">
                     <div className="col">
@@ -32,6 +33,7 @@ function App() {
                             <Route path="/catalog" element={<CatalogFunc isHasSearchForm={true}/>}/>
                             <Route path="/productCard/:id" element={<ProductCard/>}/>
                             <Route path="/cart" element={<Cart/>}/>
+                            <Route path="*" element={<NotFound/>} />
                         </Routes>
                     </div>
                 </div>

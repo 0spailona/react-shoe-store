@@ -6,20 +6,37 @@ import ProductCardTable from "./productCardTable.tsx";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import {addToCart, CartItem} from "../../redux/slices/cart/cartSlice.ts";
 import {fetchProductCard} from "../../redux/slices/productCardSlice.ts";
+import NotFound from "../utilsComponents/notFound.tsx";
+import {initialStateFullItem} from "../../config.ts";
 
 
 export default function ProductCard() {
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
-    const {item, loading} = useAppSelector(state => state.productCard)
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        dispatch(fetchProductCard(id))
+    }, [])
 
+    const {item, loading} = useAppSelector(state => state.productCard)
+    const [isFound, setIsFound] = useState(false)
+
+    useEffect(() => {
+      if(!loading && item !== initialStateFullItem){
+          setIsFound(true)
+      }
+    }, [loading])
+
+    
     const [count, setCount] = useState(1);
     const [selectedSize, setSelectedSize] = useState({
         index: -1, size: ""
     });
 
     const [warn, setWarn] = useState(false);
+
 
     const addItemToCart = (item: CartItem) => {
         if (!item.size) {
@@ -32,11 +49,7 @@ export default function ProductCard() {
 
     const {id} = useParams()
 
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        dispatch(fetchProductCard(id))
-    }, [])
+
 
     const increaseCount = () => {
         if (selectedSize.size) {
@@ -79,11 +92,14 @@ export default function ProductCard() {
         return count > 0
     }
 
+
+
     return (
         <>
-            {loading ? <div className="small-block"><Preloader/></div>  : <>
-                {warn ? <Alert variant="warning" show={true} className="d-flex justify-content-between"><span>Сначала выберете размер</span>
-                    <CloseButton onClick={() => setWarn(false)}></CloseButton></Alert> : null}
+            {loading ? <div className="small-block"><Preloader/></div>  :
+                isFound ? <>
+                <Alert variant="warning" show={warn} className="d-flex justify-content-between"><span>Сначала выберете размер</span>
+                    <CloseButton onClick={() => setWarn(false)}></CloseButton></Alert>
                 <section className="catalog-item">
                     <h2 className="text-center m-5">{item.title}</h2>
                     <Row>
@@ -119,7 +135,7 @@ export default function ProductCard() {
                         </Col>
                     </Row>
                 </section>
-            </>}
+            </> : <NotFound/>}
         </>
     )
 }

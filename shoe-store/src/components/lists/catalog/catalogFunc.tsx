@@ -67,8 +67,7 @@ export default function CatalogFunc({isHasSearchForm}: Props) {
 
     return (
         <section className="catalog small-block">
-
-            <h2 className={`text-center ${isHasSearchForm ? "mb-5" : ""}`}>Каталог</h2>
+            <h2 className="text-center mb-5">Каталог</h2>
             {searchField}
             {loadingList && loadingCategories ? <Preloader/> :
                 <> {preloaderCategories}

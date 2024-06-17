@@ -9,6 +9,8 @@ export default function Header() {
     const navigate = useNavigate();
     const items = useAppSelector(state => state.cart.cartItems)
 
+    //console.log("header cart",items)
+
     const itemsCount = Object.values(items).reduce((count, item) => count + item.count, 0);
     const dispatch = useAppDispatch()
     const navigator = useNavigate();

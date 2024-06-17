@@ -7,21 +7,18 @@ import Preloader from "../utilsComponents/preloader.tsx";
 
 export default function OrderForm() {
     const dispatch = useAppDispatch()
+    const {loading,owner} = useAppSelector(state => state.orderForm)
 
-    const [inputValuePhone, setInputValuePhone] = useState("")
-    const [inputValueAddress, setInputValueAddress] = useState("")
-    const loading = useAppSelector(state => state.orderForm.loading)
+    const [inputValuePhone, setInputValuePhone] = useState(owner.phone)
+    const [inputValueAddress, setInputValueAddress] = useState(owner.address)
+
 
     const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
         const phoneNumberData = Object.fromEntries(formData).phone.toString()
-        //console.log("phoneNumberData", phoneNumberData)
-        const phone = formatNumber(phoneNumberData)
-        console.log("phone",phone)
         const addressData = Object.fromEntries(formData).address.toString()
-        //console.log("address", addressData)
-        dispatch(saveOwner({phone: phoneNumberData, address: addressData}))
+        dispatch(saveOwner({phone: formatNumber(phoneNumberData), address: addressData}))
     }
 
     const formatNumber = (str:string) =>{
@@ -39,7 +36,7 @@ export default function OrderForm() {
                             <Form.Group className="mb-3">
                                 <Form.Label htmlFor="phone">Телефон</Form.Label>
                                 <Form.Control id="phone" name="phone" placeholder="Ваш телефон"
-                                              pattern={"^[0-9\\+][[0-9]\\(\\\\)\\ \\-]{4,14}[0-9]$"}
+                                              pattern="^[0-9+][0-9\(\) \-]{4,14}[0-9]$"
                                               onChange={(e) => setInputValuePhone(e.target.value)}
                                               value={inputValuePhone}
                                               required/>

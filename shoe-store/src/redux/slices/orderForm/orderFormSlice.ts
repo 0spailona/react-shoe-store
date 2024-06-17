@@ -9,7 +9,7 @@ export type OrderFormData = {
     },
     loading: boolean,
     errors: string,
-    success:boolean
+    success: boolean
 }
 
 const initialState: OrderFormData = {
@@ -19,7 +19,7 @@ const initialState: OrderFormData = {
     },
     loading: false,
     errors: "",
-    success:false
+    success: false
 }
 
 const createSliceWithThunk = buildCreateSlice({
@@ -30,16 +30,18 @@ const createSliceWithThunk = buildCreateSlice({
 export const orderFormSlice = createSliceWithThunk({
     name: "orderForm",
     initialState,
+    selectors:{
+        orderFormError:(state => state.errors),
+        owner:(state => state.owner)
+    },
     reducers: (create) => ({
         saveOwner: create.reducer((state, action: PayloadAction<{ phone: string, address: string }>) => {
             state.loading = true
             state.owner = action.payload
         }),
 
-
         sendData: create.asyncThunk<boolean>(async (_, api) => {
                 try {
-                    console.log("async prepare")
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     const cartItems = api.getState().cart.cartItems
@@ -47,11 +49,17 @@ export const orderFormSlice = createSliceWithThunk({
                     // @ts-expect-error
                     const owner = api.getState().orderForm.owner
                     const items = getItemsData(cartItems)
-                    console.log("sendData items",items)
-                    //const answer =
-                        await fetchDataToServer({owner,items})
-                   // console.log("answer",answer)
+                    const answer = await fetchDataToServer({owner, items})
+
+                    if (answer.status === 500) {
+                        return api.rejectWithValue("Сервер недоступен")
+                    }
+
+                    if (Math.floor(answer.status / 100) !== 2) {
+                        return api.rejectWithValue(answer.statusText)
+                    }
                     return true
+
 
                 } catch (e) {
                     return api.rejectWithValue(e)
@@ -65,6 +73,7 @@ export const orderFormSlice = createSliceWithThunk({
                 },
                 fulfilled: (state) => {
                     state.success = true
+                    state.errors = ""
                 },
                 rejected: (state, action) => {
                     state.errors = action.payload as string
@@ -79,5 +88,6 @@ export const orderFormSlice = createSliceWithThunk({
 
 
 export const {saveOwner, sendData} = orderFormSlice.actions
+export const {orderFormError,owner} = orderFormSlice.selectors
 const orderFormReducer = orderFormSlice.reducer
 export default orderFormReducer
