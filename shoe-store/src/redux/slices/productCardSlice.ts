@@ -5,14 +5,14 @@ const basedUrl = import.meta.env.VITE_URL
 
 export type ProductCard = {
     item: FullItem,
-    error:string,
-    loading:boolean,
+    error: string,
+    loading: boolean,
 }
 
-const initialState:ProductCard = {
+const initialState: ProductCard = {
     item: initialStateFullItem,
-    error:"",
-    loading:true
+    error: "",
+    loading: true
 }
 
 const createSliceWithThunk = buildCreateSlice({
@@ -24,26 +24,20 @@ export const productCardSlice = createSliceWithThunk({
     initialState,
     selectors: {
         item: (state) => state.item,
-        loadingState: (state => state.loading),
         loadingProductError: (state => state.error)
     },
     reducers: (create) => ({
-        fetchProductCard: create.asyncThunk<FullItem,string>(
-            async (pattern:string, {rejectWithValue}) => {
+        fetchProductCard: create.asyncThunk<FullItem, string>(
+            async (pattern: string, {rejectWithValue}) => {
                 try {
                     const fullUrl = `${basedUrl}/api/items/${pattern}`;
+                    //const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
                     const response = await fetch(fullUrl)
-
-                    //console.log("fetchTopSalesList response",response)
-
-                    if (Math.trunc(response.status / 100) !== 2) {
-                        return rejectWithValue("Loading error!")
+                    if (Math.floor(response.status / 100) !== 2) {
+                        return rejectWithValue(`Loading error ${response.statusText}`)
                     }
 
-                    const list = await response.json();
-                   // console.log("fetchTopSalesList card", list)
-                    return list
-                    //return await response.json();
+                    return await response.json()
                 } catch (e) {
                     return rejectWithValue(e)
                 }
@@ -58,7 +52,8 @@ export const productCardSlice = createSliceWithThunk({
                     state.item = action.payload
                 },
                 rejected: (state, action) => {
-                    state.error = action.payload as string
+                    state.error = action.payload as string ? action.payload as string : "Loading categories error"
+                    console.log("error fetchProductCard")
                 },
                 settled: (state) => {
                     state.loading = false
@@ -70,7 +65,7 @@ export const productCardSlice = createSliceWithThunk({
 })
 
 export const {fetchProductCard} = productCardSlice.actions
-export const {item, loadingState, loadingProductError} = productCardSlice.selectors
+export const {item, loadingProductError} = productCardSlice.selectors
 
 const productCardReducer = productCardSlice.reducer
 export default productCardReducer

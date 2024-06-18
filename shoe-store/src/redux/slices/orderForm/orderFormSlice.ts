@@ -1,5 +1,5 @@
 import {asyncThunkCreator, buildCreateSlice, PayloadAction} from "@reduxjs/toolkit";
-import {fetchDataToServer, getItemsData} from "./orderFormUtils.ts";
+import {sendDataToServer, getItemsData} from "./orderFormUtils.ts";
 
 
 export type OrderFormData = {
@@ -26,13 +26,12 @@ const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
 })
 
-
 export const orderFormSlice = createSliceWithThunk({
     name: "orderForm",
     initialState,
-    selectors:{
-        orderFormError:(state => state.errors),
-        owner:(state => state.owner)
+    selectors: {
+        orderFormError: (state => state.errors),
+        sendOrderFormSuccess: (state => state.success)
     },
     reducers: (create) => ({
         saveOwner: create.reducer((state, action: PayloadAction<{ phone: string, address: string }>) => {
@@ -49,7 +48,7 @@ export const orderFormSlice = createSliceWithThunk({
                     // @ts-expect-error
                     const owner = api.getState().orderForm.owner
                     const items = getItemsData(cartItems)
-                    const answer = await fetchDataToServer({owner, items})
+                    const answer = await sendDataToServer({owner, items})
 
                     if (answer.status === 500) {
                         return api.rejectWithValue("Сервер недоступен")
@@ -59,7 +58,6 @@ export const orderFormSlice = createSliceWithThunk({
                         return api.rejectWithValue(answer.statusText)
                     }
                     return true
-
 
                 } catch (e) {
                     return api.rejectWithValue(e)
@@ -88,6 +86,6 @@ export const orderFormSlice = createSliceWithThunk({
 
 
 export const {saveOwner, sendData} = orderFormSlice.actions
-export const {orderFormError,owner} = orderFormSlice.selectors
+export const {orderFormError,sendOrderFormSuccess} = orderFormSlice.selectors
 const orderFormReducer = orderFormSlice.reducer
 export default orderFormReducer

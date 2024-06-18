@@ -1,25 +1,24 @@
 import {Button, NavLink, Table} from "react-bootstrap";
-import { removeFromCart} from "../../redux/slices/cart/cartSlice.ts";
+import {removeFromCart} from "../../redux/slices/cart/cartSlice.ts";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import Preloader from "../utilsComponents/preloader.tsx";
-
 
 export default function CartTable() {
     const dispatch = useAppDispatch()
     const {cartItems, sum, loading} = useAppSelector(state => state.cart)
     const keysCartItems = Object.keys(cartItems)
+
     if (keysCartItems.length === 0) {
         return (
             <h4 className="great-block text-center text-secondary p-5">Ваша корзина пуста</h4>
         )
     }
+
     const removeItem = (key: string) => {
         dispatch(removeFromCart(key))
     }
 
-
     return (<>
-
             {loading ? <Preloader/> :
                 <Table className="table table-bordered">
                     <thead>
@@ -49,7 +48,6 @@ export default function CartTable() {
                             </td>
                         </tr>
                     )}
-
                     <tr>
                         <td colSpan={5} className="text-right">Общая стоимость</td>
                         <td>{sum} руб.</td>

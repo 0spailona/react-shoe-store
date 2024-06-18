@@ -2,8 +2,8 @@ import {Item} from "../../config.ts";
 import ListItem from "./listItem.tsx";
 import {Row} from "react-bootstrap";
 
-type Props ={
-    items:Array<Item>;
+type Props = {
+    items: Array<Item>;
 }
 
 export default function List({items}: Props) {

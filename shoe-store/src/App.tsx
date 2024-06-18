@@ -33,7 +33,7 @@ function App() {
                             <Route path="/catalog" element={<CatalogFunc isHasSearchForm={true}/>}/>
                             <Route path="/productCard/:id" element={<ProductCard/>}/>
                             <Route path="/cart" element={<Cart/>}/>
-                            <Route path="*" element={<NotFound/>} />
+                            <Route path="*" element={<NotFound/>}/>
                         </Routes>
                     </div>
                 </div>

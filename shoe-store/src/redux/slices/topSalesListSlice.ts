@@ -26,18 +26,17 @@ export const topSalesListSlice = createSliceWithThunk({
     initialState,
     selectors: {
         topSalesListItems: (state) => state.topSalesListItems,
-        loadingState: (state => state.loading),
         topSalesError: (state => state.error)
     },
     reducers: (create) => ({
-        fetchTopSalesList: create.asyncThunk<Array<Item>,string>(
-            async (pattern:string, {rejectWithValue}) => {
+        fetchTopSalesList: create.asyncThunk<Array<Item>, string>(
+            async (pattern: string, {rejectWithValue}) => {
                 try {
                     const fullUrl = `${basedUrl}${pattern}`;
+                    //const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
                     const response = await fetch(fullUrl)
-
-                    if (Math.trunc(response.status / 100) !== 2) {
-                        return rejectWithValue("Loading error!")
+                    if (Math.floor(response.status / 100) !== 2) {
+                        return rejectWithValue(`Loading error ${response.statusText}`)
                     }
 
                     return await response.json()
@@ -58,7 +57,8 @@ export const topSalesListSlice = createSliceWithThunk({
                     state.error = ""
                 },
                 rejected: (state, action) => {
-                    state.error = action.payload as string
+                    state.error = action.payload as string ? action.payload as string : "Loading categories error"
+                    console.log("error fetchTopSalesList")
                 },
                 settled: (state) => {
                     state.loading = false
@@ -69,7 +69,7 @@ export const topSalesListSlice = createSliceWithThunk({
 })
 
 export const {fetchTopSalesList} = topSalesListSlice.actions
-export const {topSalesListItems, loadingState, topSalesError} = topSalesListSlice.selectors
+export const {topSalesListItems, topSalesError} = topSalesListSlice.selectors
 
 const topSalesListReducer = topSalesListSlice.reducer
 export default topSalesListReducer

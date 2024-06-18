@@ -5,8 +5,8 @@ const basedUrl = import.meta.env.VITE_URL
 
 export async function getOneProductData(id: number) {
     const fullUrl = `${basedUrl}/api/items/${id}`;
+    //const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
     const response = await fetch(fullUrl)
-
     if (!response.ok) {
         throw new Error("Loading error!")
     }
@@ -18,11 +18,8 @@ export function getManyProductData(ids: number[]) {
     return Promise.all(ids.map(getOneProductData))
 }
 
-export  function getItemId(item: CartItem) {
-   // console.log("getItemId item", item)
-    const id = `${item.id}-${item.size}`
-    // console.log("Get id", item, id);
-    return id;
+export function getItemId(item: CartItem) {
+    return `${item.id}-${item.size}`;
 }
 
 export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
@@ -33,10 +30,7 @@ export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
     const errors = []
     const updateCartItems = {...cartItems};
 
-     //console.log("checkState cartItems", updateCartItems)
-    //console.log("checkState lastItems", lastItems)
     for (const key of Object.keys(updateCartItems)) {
-        //console.log("checkState key", key)
 
         const cartItem = cartItems[key];
         const lastItem = lastItems[key];
@@ -58,8 +52,8 @@ export function checkState(cartItems: { [id: string]: CartItem }, lastItems: {
     return {errors, cartItems: updateCartItems, sum}
 }
 
-export function getUpdateDate(arr:Array<FullItem>){
-    if(arr.length === 0) return {}
+export function getUpdateDate(arr: Array<FullItem>) {
+    if (arr.length === 0) return {}
 
     const newArr = arr.map(toDoObj)
     const result: {
@@ -67,11 +61,11 @@ export function getUpdateDate(arr:Array<FullItem>){
             price: number,
         }
     } = {}
-    for(const item of newArr){
+    for (const item of newArr) {
         const key = Object.keys(item)[0]
         result[key] = item[key]
     }
-        return result
+    return result
 }
 
 function toDoObj(obj: FullItem) {

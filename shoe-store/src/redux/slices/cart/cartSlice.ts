@@ -20,8 +20,6 @@ export type Cart = {
 }
 
 const localeStorageCart = localStorage.getItem("cart")
-//console.log("cartSlice localeStorageCart",localeStorageCart)
-//console.log("cartSlice localeStorageCart parse",JSON.parse(localeStorageCart))
 
 const initialState: Cart = {
     cartItems: localeStorageCart ? JSON.parse(localeStorageCart) : {},
@@ -31,20 +29,14 @@ const initialState: Cart = {
     updatingErrors: []
 }
 
-//console.log("cartSlice initialState", initialState)
-
 const createSliceWithThunk = buildCreateSlice({
     creators: {asyncThunk: asyncThunkCreator}
 })
-
 
 export const cartSlice = createSliceWithThunk({
     name: "cart",
     initialState,
     selectors: {
-        sum: (state) => state.sum,
-        cartItems: (state => state.cartItems),
-        loadingCart: (state => state.loading),
         loadingCartErrors: (state => state.loadingErrors),
         updatingCartErrors: (state => state.updatingErrors)
     },
@@ -67,24 +59,16 @@ export const cartSlice = createSliceWithThunk({
             state.loading = true
             state.cartItems = {}
             state.loading = false
+            localStorage.setItem("cart", JSON.stringify(state.cartItems))
         }),
-/*
-        getCartFromLocalStorage: create.reducer((state) => {
-            state.loading = true
-            state.cartItems = JSON.parse(localStorage.getItem("cart")) | initialState
-            state.loading = false
-        }),*/
 
         checkCart: create.asyncThunk<Array<FullItem>>(async (_, api) => {
                 try {
-                    console.log("checkCart localeStorageCart",localStorage.getItem("cart"))
-                    //console.log("async prepare")
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     const cart = api.getState().cart
-                    // console.log("cart",cart)
                     const arrayId = Object.keys(cart.cartItems).map(key => cart.cartItems[key].id)
-                    //console.log("checkCart arrayId", arrayId)
+
                     return await getManyProductData(arrayId)
 
                 } catch (e) {
@@ -97,13 +81,12 @@ export const cartSlice = createSliceWithThunk({
                     state.loadingErrors = "";
                 },
                 fulfilled: (state, action) => {
-                    //console.log("fulfilled action.payload", action.payload)
                     const newState = getUpdateDate(action.payload)
                     const updateResult = checkState(state.cartItems, newState)
                     state.cartItems = updateResult.cartItems
                     state.updatingErrors = updateResult.errors
                     state.sum = updateResult.sum
-                    localStorage.setItem("cart",JSON.stringify(state.cartItems))
+                    localStorage.setItem("cart", JSON.stringify(state.cartItems))
                 },
                 rejected: (state, action) => {
                     state.loadingErrors = action.payload as string
@@ -118,9 +101,6 @@ export const cartSlice = createSliceWithThunk({
 
 export const {removeFromCart, checkCart, addToCart, cleanCart} = cartSlice.actions
 export const {
-    sum,
-    cartItems,
-    loadingCart,
     loadingCartErrors,
     updatingCartErrors
 } = cartSlice.selectors

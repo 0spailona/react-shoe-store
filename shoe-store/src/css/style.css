@@ -34,7 +34,7 @@ section {
     min-height: 300px;
 }
 
-.great-block{
+.great-block {
     min-height: 450px;
 }
 
@@ -111,7 +111,7 @@ section {
 }
 
 
-.header-controls-search-form .form-control:focus-visible{
+.header-controls-search-form .form-control:focus-visible {
     box-shadow: none;
 }
 
@@ -139,6 +139,7 @@ section {
 .banner img {
     width: 100%;
 }
+
 /* Preloader */
 .preloader {
 
@@ -194,7 +195,6 @@ section {
 }
 
 
-
 /* Catalog */
 .catalog {
     min-height: 600px;
@@ -209,7 +209,7 @@ section {
     margin-bottom: 1em;
 }
 
-.catalog-item-card .image-wrap{
+.catalog-item-card .image-wrap {
     height: 400px;
 }
 
@@ -246,7 +246,7 @@ section {
     box-shadow: none;
 }
 
-.catalog-search-form .form-control:focus-visible{
+.catalog-search-form .form-control:focus-visible {
     box-shadow: none;
 }
 

@@ -1,21 +1,19 @@
 import {Nav} from "react-bootstrap";
 
-type Props ={
-    activeCategory:number;
-    categories:Array<{ id: number, title: string }>;
-    changeActiveCategory:(id :number) => void
+type Props = {
+    activeCategory: number;
+    categories: Array<{ id: number, title: string }>;
+    changeActiveCategory: (id: number) => void
 }
 
-export default function CatalogNav({activeCategory,categories,changeActiveCategory}: Props) {
+export default function CatalogNav({activeCategory, categories, changeActiveCategory}: Props) {
 
-    //console.log("CatalogNav activeCategory", activeCategory)
     return (
         <Nav className="justify-content-center catalog-categories mb-5">
             <Nav.Item>
                 <Nav.Link href="#"
                           className={`${activeCategory === 0 ? "active" : "text-secondary"}`}
                           onClick={() => {
-                              //console.log("onClick")
                               changeActiveCategory(0)
                           }}>Все</Nav.Link>
             </Nav.Item>
@@ -24,7 +22,6 @@ export default function CatalogNav({activeCategory,categories,changeActiveCatego
                           className={`${activeCategory === x.id ? "active" : "text-secondary"}`}
                           data-id={x.id}
                           onClick={() => {
-                             // console.log("onClick")
                               changeActiveCategory(x.id)
                           }}>{x.title}</Nav.Link>
             </Nav.Item>)}

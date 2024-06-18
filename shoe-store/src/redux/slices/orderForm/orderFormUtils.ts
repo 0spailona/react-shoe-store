@@ -24,18 +24,10 @@ export function getItemsData(cartItems: { [id: string]: CartItem }) {
     )
 }
 
-export async function fetchDataToServer(content: PostBody) {
+export async function sendDataToServer(content: PostBody) {
     const fullUrl = `${basedUrl}/api/order`
-
-    const errorBody = {
-        owner: {
-            phone: 1234,
-        }
-    }
     const body = JSON.stringify(content)
-    //const body = JSON.stringify(errorBody)
-    //console.log("body", body)
-    //const content = {owner,items}
+
     return await fetch(fullUrl, {
         headers: {'Content-Type': 'application/json'},
         method: "POST",

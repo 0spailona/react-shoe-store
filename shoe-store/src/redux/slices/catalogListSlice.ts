@@ -5,7 +5,7 @@ const basedUrl = import.meta.env.VITE_URL
 
 export type CatalogListStore = {
     loadingList: boolean,
-    loadingCategories:boolean,
+    loadingCategories: boolean,
     hasMore: boolean,
     categories: Array<{ id: number, title: string }>,
     activeCategory: number,
@@ -17,7 +17,7 @@ export type CatalogListStore = {
 
 const initialState: CatalogListStore = {
     loadingList: true,
-    loadingCategories:true,
+    loadingCategories: true,
     hasMore: false,
     categories: [],
     activeCategory: 0,
@@ -35,11 +35,8 @@ export const catalogListSlice = createSliceWithThunk({
     name: "catalogList",
     initialState,
     selectors: {
-        catalogList: (state) => state.catalogList,
         loadingListError: (state => state.loadingListError),
-        loadingCategoriesError: (state => state.loadingCategoriesError),
-        catalogLoadingList:(state => state.loadingList),
-        catalogLoadingCategories:(state => state.loadingCategories)
+        loadingCategoriesError: (state => state.loadingCategoriesError)
     },
     reducers: (create) => ({
         cleanStore: create.reducer((state) => {
@@ -49,13 +46,15 @@ export const catalogListSlice = createSliceWithThunk({
             state.catalogList = []
             state.loadingListError = ""
         }),
-
-
         fetchCategories: create.asyncThunk<Array<Item>, string>(
             async (pattern, api) => {
                 try {
                     const fullUrl = `${basedUrl}${pattern}`;
+                    //const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
                     const response = await fetch(fullUrl)
+                    if (Math.floor(response.status / 100) !== 2) {
+                        return api.rejectWithValue(`Loading error ${response.statusText}`)
+                    }
 
                     return await response.json();
                 } catch (e) {
@@ -73,11 +72,10 @@ export const catalogListSlice = createSliceWithThunk({
                     state.loadingCategoriesError = ""
                 },
                 rejected: (state, action) => {
-                    state.loadingCategoriesError = action.payload as string
-                    //state.searchResultList = []
+                    state.loadingCategoriesError = action.payload as string ? action.payload as string : "Loading categories error"
+                    console.log("error fetchCategories")
                 },
                 settled: (state) => {
-                    //console.log("settled loading",state.loading)
                     state.loadingCategories = false
                 }
             }
@@ -97,7 +95,6 @@ export const catalogListSlice = createSliceWithThunk({
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     const catalogStore = api.getState().catalogList
-                    //console.log("fetchCatalogList 2 from middleware catalogStore", catalogStore)
                     const activeCategory = catalogStore.activeCategory
                     const searchStr = catalogStore.searchStr
                     const size = catalogStore.catalogList.length
@@ -113,11 +110,13 @@ export const catalogListSlice = createSliceWithThunk({
 
                     fullUrl += `offset=${size}&`
 
+                   // const response = await fetch(fullUrl, {method: "GET", mode: "no-cors"})
                     const response = await fetch(fullUrl)
 
-                    if (Math.trunc(response.status / 100) !== 2) {
-                        return api.rejectWithValue("Loading error!")
+                    if (Math.floor(response.status / 100) !== 2) {
+                        return api.rejectWithValue(`Loading error ${response.statusText}`)
                     }
+
                     return await response.json()
                 } catch (e) {
                     return api.rejectWithValue(e)
@@ -126,17 +125,18 @@ export const catalogListSlice = createSliceWithThunk({
             {
                 pending: (state) => {
                     state.loadingList = true;
-                   // console.log("settled pending",state.loadingList)
                     state.loadingListError = "";
+                    state.hasMore = false
+
                 },
                 fulfilled: (state, action) => {
-                    //state.listLength = state.catalogList.length + action.payload.length
                     state.catalogList = [...state.catalogList, ...action.payload]
                     state.hasMore = action.payload.length >= countLoadItems
                     state.loadingListError = ""
                 },
                 rejected: (state, action) => {
-                    state.loadingListError = action.payload as string
+                    state.loadingListError = action.payload as string ? action.payload as string : "Loading categories error"
+                    console.log("error fetchCatalogList")
                 },
                 settled: (state) => {
                     state.loadingList = false
@@ -148,8 +148,8 @@ export const catalogListSlice = createSliceWithThunk({
 })
 
 
-export const {cleanStore,fetchCatalogList, toActiveCategory, toSearchStr, fetchCategories} = catalogListSlice.actions
-export const {catalogList, loadingListError,loadingCategoriesError,catalogLoadingList,catalogLoadingCategories} = catalogListSlice.selectors
+export const {cleanStore, fetchCatalogList, toActiveCategory, toSearchStr, fetchCategories} = catalogListSlice.actions
+export const {loadingListError, loadingCategoriesError} = catalogListSlice.selectors
 
 const catalogListReducer = catalogListSlice.reducer
 export default catalogListReducer

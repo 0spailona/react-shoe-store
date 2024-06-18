@@ -3,6 +3,7 @@ import {
     cleanStore,
     fetchCatalogList,
     fetchCategories,
+    loadingListError,
     toActiveCategory,
     toSearchStr
 } from "../../../redux/slices/catalogListSlice.ts";
@@ -27,7 +28,7 @@ export default function CatalogFunc({isHasSearchForm}: Props) {
         loadingList,
         loadingCategories
     } = useAppSelector(state => state.catalogList)
-    //const [loadingStatus, setLoadingStatus] = useState(loading)
+
     const [inputValue, setInputValue] = useState(searchStr)
 
     useEffect(() => {
@@ -66,7 +67,7 @@ export default function CatalogFunc({isHasSearchForm}: Props) {
         </div> : null;
 
     return (
-        <section className="catalog small-block">
+        <section className={`${useAppSelector(loadingListError) ? "small-block" : "catalog"}`}>
             <h2 className="text-center mb-5">Каталог</h2>
             {searchField}
             {loadingList && loadingCategories ? <Preloader/> :

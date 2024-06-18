@@ -1,6 +1,6 @@
 import {Col, Container, Form, Nav, Navbar, Row} from "react-bootstrap";
 import {useState} from "react";
-import {useNavigate,NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../redux/hooks.ts";
 import {headerNav} from "../config.ts";
 import {toSearchStr} from "../redux/slices/catalogListSlice.ts";
@@ -8,30 +8,26 @@ import {toSearchStr} from "../redux/slices/catalogListSlice.ts";
 export default function Header() {
     const navigate = useNavigate();
     const items = useAppSelector(state => state.cart.cartItems)
-
-    //console.log("header cart",items)
+    const dispatch = useAppDispatch()
 
     const itemsCount = Object.values(items).reduce((count, item) => count + item.count, 0);
-    const dispatch = useAppDispatch()
-    const navigator = useNavigate();
 
     const [searchFormVisible, setSearchFormVisible] = useState<boolean>(false);
-    const [inputValue,setInputValue] = useState("");
+    const [inputValue, setInputValue] = useState("");
 
     const toggleSearchFarmVisible = () => {
         if (!searchFormVisible) {
             setSearchFormVisible(true)
             return
         }
-        if(!inputValue){
+        if (!inputValue) {
             setSearchFormVisible(false)
             return
-        }
-        else{
+        } else {
             dispatch(toSearchStr(inputValue))
             setInputValue("")
             setSearchFormVisible(false)
-            navigator("/catalog")
+            navigate("/catalog")
             return
         }
     }
@@ -41,7 +37,8 @@ export default function Header() {
             <Row>
                 <Col>
                     <Navbar expand="sm" variant="light" bg="light">
-                        <NavLink to="/" className="navbar-brand"> <img src="./img/header-logo.png" alt="Bosa Noga"/></NavLink>
+                        <NavLink to="/" className="navbar-brand"> <img src="./img/header-logo.png"
+                                                                       alt="Bosa Noga"/></NavLink>
                         <Navbar.Collapse id="navbarMain">
                             <Nav className="mr-auto">
                                 {headerNav.map((navLink, i) => <Nav.Item key={i}>
@@ -66,7 +63,7 @@ export default function Header() {
                                       onSubmit={(e) => e.preventDefault()}>
                                     <Form.Control placeholder="Поиск"
                                                   value={inputValue}
-                                                  onChange={(e)=>setInputValue(e.target.value)}
+                                                  onChange={(e) => setInputValue(e.target.value)}
                                                   onKeyUp={e => e.key === "Enter" && toggleSearchFarmVisible()}
                                     />
                                 </Form>

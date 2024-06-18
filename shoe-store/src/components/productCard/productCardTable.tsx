@@ -1,16 +1,16 @@
 import {Table} from "react-bootstrap";
 
-type Props ={
-    sku:string,
-    manufacturer:string,
-    color:string,
-    material:string,
-    season:string,
-    reason:string
+type Props = {
+    sku: string,
+    manufacturer: string,
+    color: string,
+    material: string,
+    season: string,
+    reason: string
 }
 
-export default function ProductCardTable({sku,manufacturer, color,material,season,reason}: Props) {
-    return(
+export default function ProductCardTable({sku, manufacturer, color, material, season, reason}: Props) {
+    return (
         <Table bordered>
             <tbody>
             <tr>
